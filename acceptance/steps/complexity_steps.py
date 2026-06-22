@@ -66,7 +66,13 @@ def when_if_elif_else(m, params):
     if_count = int(params.get("if_count", m.group(1)))
     elif_count = int(params.get("elif_count", m.group(2)))
     else_count = int(params.get("else_count", m.group(3)))
-    lines = ["if x:"]
+    assert else_count in (0, 1), f"else_count must be 0 or 1, got {else_count}"
+    # Build an if/elif/else chain: if_count independent ifs before the main chain
+    lines = []
+    for _ in range(if_count - 1):
+        lines.append("if x:")
+        lines.append("    pass")
+    lines.append("if x:")
     lines.append("    pass")
     for _ in range(elif_count):
         lines.append("elif x:")
@@ -82,7 +88,10 @@ def when_if_elif_else(m, params):
 @step(r'the function contains a "(.+)" loop with else="(.+)"')
 def when_loop_with_else(m, params):
     loop = params.get("loop") or m.group(1)
-    has_else = (params.get("has_else") or m.group(2)) == "yes"
+    has_else_raw = params.get("has_else") or m.group(2)
+    assert loop in ("for", "while"), f"loop must be 'for' or 'while', got {loop!r}"
+    assert has_else_raw in ("yes", "no"), f"has_else must be 'yes' or 'no', got {has_else_raw!r}"
+    has_else = has_else_raw == "yes"
     if loop == "for":
         lines = ["for i in x:", "    pass"]
     else:
@@ -97,7 +106,9 @@ def when_loop_with_else(m, params):
 @step(r'the function contains a try with (\d+) except handlers and finally="(.+)"')
 def when_try_except_finally(m, params):
     except_count = int(params.get("except_count", m.group(1)))
-    has_finally = (params.get("has_finally") or m.group(2)) == "yes"
+    has_finally_raw = params.get("has_finally") or m.group(2)
+    assert has_finally_raw in ("yes", "no"), f"has_finally must be 'yes' or 'no', got {has_finally_raw!r}"
+    has_finally = has_finally_raw == "yes"
     lines = ["try:", "    pass"]
     for _ in range(except_count):
         lines += ["except Exception:", "    pass"]
@@ -111,7 +122,9 @@ def when_try_except_finally(m, params):
 @step(r'the function contains a match with (\d+) cases and wildcard="(.+)"')
 def when_match_case(m, params):
     case_count = int(params.get("case_count", m.group(1)))
-    has_wildcard = (params.get("has_wildcard") or m.group(2)) == "yes"
+    has_wildcard_raw = params.get("has_wildcard") or m.group(2)
+    assert has_wildcard_raw in ("yes", "no"), f"has_wildcard must be 'yes' or 'no', got {has_wildcard_raw!r}"
+    has_wildcard = has_wildcard_raw == "yes"
     lines = ["match x:"]
     for i in range(case_count):
         lines += [f"    case {i}:", "        pass"]

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run acceptance tests for all feature files.
+# Run acceptance tests for all feature files, then Gherkin soft mutation.
 # Usage: ./acceptance/run_acceptance.sh
 set -euo pipefail
 
@@ -36,8 +36,10 @@ for feature_file in "$REPO_ROOT"/features/*.feature; do
     parsed="$PARSED_DIR/${stem}_parsed.json"
     gherkin-parser "$feature_file" "$parsed"
 
-    # 2. Generate
-    uv run python "$REPO_ROOT/acceptance/generate_acceptance.py" "$parsed" "$steps_mod" "$GENERATED_DIR"
+    # 2. Generate (pass relative feature path for stable metadata naming)
+    rel_feature="features/${stem}.feature"
+    uv run python "$REPO_ROOT/acceptance/generate_acceptance.py" \
+        "$parsed" "$steps_mod" "$GENERATED_DIR" "$rel_feature"
 
     # 3. Run
     generated="$GENERATED_DIR/${stem}_acceptance.py"
@@ -50,4 +52,50 @@ done
 
 echo ""
 echo "=== Acceptance summary: $PASSED feature(s) passed, $FAILED failed ==="
-exit $((FAILED > 0 ? 1 : 0))
+
+if [[ $FAILED -gt 0 ]]; then
+    echo "Skipping Gherkin mutation — acceptance tests failed"
+    exit 1
+fi
+
+# --- Gherkin soft mutation ---
+echo ""
+echo "=== Gherkin soft mutation ==="
+
+MUTATION_FAILED=0
+RUNNER="uv run python $REPO_ROOT/acceptance/runner_adapter.py"
+
+for feature_file in "$REPO_ROOT"/features/*.feature; do
+    stem="$(basename "$feature_file" .feature)"
+
+    if [[ "$stem" == *_qa ]]; then
+        continue
+    fi
+
+    steps_mod="${STEPS_MAP[$stem]:-}"
+    if [[ -z "$steps_mod" ]]; then
+        continue
+    fi
+
+    echo "--- mutation: $stem ---"
+    if gherkin-mutator \
+        --feature "$feature_file" \
+        --generated-dir "$GENERATED_DIR" \
+        --work-dir "$REPO_ROOT/tmp/acceptance-mutation/$stem" \
+        --level soft \
+        --workers 4 \
+        --runner-worker "$RUNNER"; then
+        echo "PASS mutation: $stem"
+    else
+        echo "FAIL mutation: $stem"
+        MUTATION_FAILED=$((MUTATION_FAILED + 1))
+    fi
+done
+
+if [[ $MUTATION_FAILED -gt 0 ]]; then
+    echo "=== Gherkin mutation FAILED for $MUTATION_FAILED feature(s) ==="
+    exit 1
+fi
+
+echo "=== Gherkin mutation passed ==="
+exit 0
