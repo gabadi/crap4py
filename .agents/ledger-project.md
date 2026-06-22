@@ -68,3 +68,29 @@ Format: `<date> | <session-id> | <role> | <failure-class> | <verdict> | <one-lin
 2026-06-22 | 45b70da6 | curator | tool-error | promoted→.agents/roles/curator.md | session-to-skill is interactive; write SKILL.md directly from ledger evidence in autonomous curator runs
 2026-06-22 | 45b70da6 | curator | tool-error | rejected→swarmforge-only | extract.py conversation_arc null / token_budget empty (4th curator occurrence) — ongoing investigation
 2026-06-22 | 6d7df830 | integrator | convention-gap | rejected→swarmforge-only | integrator merge retro: all actions swarmforge-scoped; no project promotions
+
+## 2026-06-22 — knowledge/c4-crap-report-command run
+
+2026-06-22 | bd628b3f | cleaner | convention-gap | rejected→swarmforge-only | mutmut scan/count mode unavailable — swarmforge local-engineering item
+2026-06-22 | bd628b3f | cleaner | tool-error | rejected→swarmforge-only | mutmut stale after refactor — swarmforge investigation item
+2026-06-22 | bd628b3f | cleaner | convention-gap | rejected→swarmforge-only | commit hash 10-char reminder — swarmforge rule (recurring)
+2026-06-22 | 68d171c9 | coder | convention-gap | promoted→.agents/roles/coder.md | QA step column-by-position extraction silently returns wrong column when report format changes; always name column in comment
+2026-06-22 | 68d171c9 | coder | convention-gap | promoted→.agents/roles/coder.md | CRAP back-solve with cc=1 fails for CRAP>2 (cov<0); use concrete cc/cov pairs per target CRAP
+2026-06-22 | 68d171c9 | coder | convention-gap | promoted→.agents/roles/coder.md | ctx.cli_argv must be fully populated by Given steps before when_command_runs fires
+2026-06-22 | 68d171c9 | coder | convention-gap | promoted→AGENTS.md | gherkin-parser does not include inline data tables in step IR; hardcode in step handler
+2026-06-22 | 68d171c9 | coder | convention-gap | rejected→swarmforge-only | positional column extraction comment rule — swarmforge/coder role prompt
+2026-06-22 | e6bab3b8 | QA | convention-gap | rejected→swarmforge-only | QA pre-verification: detect un-merged pipeline branches before verifying — swarmforge QA role item
+2026-06-22 | e6bab3b8 | QA | convention-gap | rejected→first-occurrence | exit code masking: never pipe CLI invocation through grep when testing exit codes — skill candidate
+2026-06-22 | d8370093 | hardender | convention-gap | promoted→.agents/roles/hardender.md | macOS mutmut survivors in _discovery_io.py are permanently equivalent; do not add platform-faking tests
+2026-06-22 | d8370093 | hardender | tool-error | promoted→.agents/roles/hardender.md | mutmut state invalidates after source merge; always re-run coverage then mutmut run before reading results
+2026-06-22 | d8370093 | hardender | convention-gap | promoted→.agents/roles/hardender.md | mutmut-stats.json key tests_by_mangled_function_name maps function→tests; use to diagnose covered-but-surviving mutants
+2026-06-22 | d8370093 | hardender | convention-gap | rejected→swarmforge-only | post-merge re-run reminder — swarmforge hardender role prompt item
+2026-06-22 | f2c50b01 | specifier | tool-error | rejected→swarmforge-only | git reset --hard startup blocked by classifier (3rd occurrence) — swarmforge backlog item escalation
+2026-06-22 | aee3d2af | curator | tool-error | rejected→swarmforge-only | extract.py null token_budget (5th occurrence) — ongoing swarmforge investigation
+2026-06-22 | c531c23f | architect | tool-error | promoted→.agents/roles/architect.md | mutmut cache does not re-test mutants when new tests added; use mutmut run <name> or full re-run to recheck
+2026-06-22 | c531c23f | architect | convention-gap | rejected→swarmforge-only | commit hash 10-char reminder for architect — swarmforge rule (recurring)
+
+## 2026-06-22 — knowledge/c4-crap-report-command run (late retros)
+
+2026-06-22 | debd2267 | integrator | convention-gap | rejected→swarmforge-only | integrator c4 retro: all actions swarmforge-scoped; no project promotions
+2026-06-22 | f2c50b01 | specifier | convention-gap | rejected→swarmforge-only | specifier merge-process-verify retro: all actions swarmforge-scoped; no project promotions
