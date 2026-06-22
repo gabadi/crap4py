@@ -47,3 +47,4 @@ Status ∈ pending|applied|stale
 2026-06-22 | ce7a20cc | ux-engineer | convention-gap | swarmforge | pending | Always use git rev-parse --short=10 HEAD for handoff draft commit field — never copy from git log --oneline (7-char, fails validator)
 2026-06-22 | 2833ecee | QA | convention-gap | swarmforge | pending | Always use git rev-parse --short=10 HEAD for handoff draft commit field (QA confirmation of same rule)
 2026-06-22 | 2833ecee | QA | convention-gap | swarmforge | pending | CRAP invocation post-C4 must be uv run python -m crap4py, not rtk python -m crap4py — update local-engineering.prompt CRAP section
+2026-06-22 | 07f1de1c | integrator | convention-gap | swarmforge | pending | After post-merge fetch, always use git rev-parse --short=10 <ref> explicitly — never read hash from git log --oneline output (truncates to 7)

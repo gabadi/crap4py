@@ -45,3 +45,5 @@ Format: `<date> | <session-id> | <role> | <failure-class> | <verdict> | <one-lin
 2026-06-22 | 2833ecee | QA | convention-gap | rejected→swarmforge-only | git rev-parse --short=10 HEAD for handoff draft — swarmforge rule (recurring)
 2026-06-22 | 2833ecee | QA | convention-gap | rejected→inferable | NOT AUTOMATED CLI absent guard in QA steps is correct — inferable from code
 2026-06-22 | 2833ecee | QA | convention-gap | rejected→swarmforge-only | rtk python -m crap4py fails — CRAP invocation is uv run python -m crap4py (swarmforge/local-engineering)
+2026-06-22 | f3652fc0 | specifier | tool-error | rejected→swarmforge-only | completion-notice retro: entire session current stale (existing backlog); dot-encoding fix applied to agent-retro-worktree-fallback skill
+2026-06-22 | 07f1de1c | integrator | convention-gap | rejected→swarmforge-only | integrator merge retro: all actions swarmforge-scoped; no project promotions

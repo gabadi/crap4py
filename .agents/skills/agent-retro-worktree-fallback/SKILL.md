@@ -49,5 +49,5 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/extract.py <transcript_path> --summary > /tm
 ## Notes
 
 - Do NOT call `entire session info <id>` for a stale result — it returns "Session not found" even for sessions visible in pid files.
-- The Claude Code project-dir encoding replaces every `/` with `-` and drops the leading `/`. The worktree path `/Users/gabadi/workspace/addi/crap4py/.worktrees/ux-engineer` encodes to `-Users-gabadi-workspace-addi-crap4py--worktrees-ux-engineer` (double-dash at `/` boundaries of path segments that start with `.`).
+- The Claude Code project-dir encoding replaces every `/` with `-` and drops the leading `/`. Crucially, a `.` at the start of a path segment encodes to `--` (dot becomes an extra dash): `.worktrees` → `--worktrees`. So `/Users/gabadi/workspace/addi/crap4py/.worktrees/ux-engineer` → `-Users-gabadi-workspace-addi-crap4py--worktrees-ux-engineer`. A naive `sed 's|/|-|g'` misses this and produces the wrong path — use `ls ~/.claude/projects/ | grep <last-segment>` to find the correct dir instead.
 - Multiple JSONL files may exist in the project dir (one per session). `ls -t` picks the most recently modified, which is the running session.
