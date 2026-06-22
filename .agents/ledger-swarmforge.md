@@ -34,3 +34,17 @@ Status ∈ pending|applied|stale
 2026-06-22 | 633ecaab | integrator | missing-artifact | swarmforge | pending | Add mkdir -p ./tmp as first step in handoff section of integrator role prompt
 2026-06-22 | 633ecaab | integrator | tool-error | swarmforge | pending | Investigate: gh pr merge blocked by auto-mode classifier when CI absent — determine if permission rule can pre-authorize for integrator worktree
 2026-06-22 | 633ecaab | integrator | convention-gap | swarmforge | pending | Replace sleep 30 && gh pr checks retry with run_in_background or Monitor pattern in integrator role
+
+## 2026-06-22 — knowledge/c2-discovery run
+
+2026-06-22 | 53a47bde | architect | convention-gap | swarmforge | pending | Handoff draft: remind to use git rev-parse --short=10 HEAD and verify exact role name from roles.tsv before sending
+2026-06-22 | 53a47bde | architect | convention-gap | swarmforge | pending | Investigate: add timebox forcing function to architect role prompt ("2 options max, then pick") to prevent over-enumeration
+2026-06-22 | dede7aa0 | cleaner | convention-gap | swarmforge | pending | CRAP bootstrap pattern: use uv run python -c "from crap4py.complexity import ..." + manual formula until __main__ (C4) lands; update local-engineering.prompt CRAP section
+2026-06-22 | d737e296 | hardender | convention-gap | swarmforge | pending | Before first handoff send, always cat .swarmforge/roles.tsv to confirm exact role ID spelling — add as pre-handoff checklist step
+2026-06-22 | d737e296 | hardender | tool-error | swarmforge | pending | Investigate: timeout on x_discover_functions__mutmut_11 (or→and guard) — likely lazy-import circular or infinite scan when adapter logic short-circuits
+2026-06-22 | (not-captured) | specifier | convention-gap | swarmforge | pending | Approval gate in specifier phase-7 must be explicit AskUserQuestion binary ("Approve / Revise") — not trailing prose that idles
+2026-06-22 | (not-captured) | specifier | tool-error | swarmforge | pending | Investigate: specifier worktree sessions not registered with entire — entire session current resolves against parent repo not worktree path
+2026-06-22 | ce7a20cc | ux-engineer | convention-gap | swarmforge | pending | Always use git rev-parse --short=10 HEAD for handoff draft commit field — never copy from git log --oneline (7-char, fails validator)
+2026-06-22 | 2833ecee | QA | convention-gap | swarmforge | pending | Always use git rev-parse --short=10 HEAD for handoff draft commit field (QA confirmation of same rule)
+2026-06-22 | 2833ecee | QA | convention-gap | swarmforge | pending | CRAP invocation post-C4 must be uv run python -m crap4py, not rtk python -m crap4py — update local-engineering.prompt CRAP section
+2026-06-22 | 07f1de1c | integrator | convention-gap | swarmforge | pending | After post-merge fetch, always use git rev-parse --short=10 <ref> explicitly — never read hash from git log --oneline output (truncates to 7)
