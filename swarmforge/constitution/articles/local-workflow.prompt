@@ -2,7 +2,6 @@
 
 ## Handoff Startup
 - Before processing any new handoff, `ready_for_next.sh` automatically syncs your worktree to trunk. Do not add per-role sync steps — the delivery script handles this.
-- If `merge_and_process` is not found in PATH when a `git_handoff` arrives, stop and report rather than improvising a merge strategy.
 
 ## Swarmforge Feedback
 - When ≥2 roles in the same pipeline run report the same failure mechanism (same failure class, similar root cause), the curator must surface this as a systemic gap in `.agents/backlog.md` regardless of whether individual items were `swarmforge`-scoped.
