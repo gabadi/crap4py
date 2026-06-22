@@ -21,3 +21,27 @@ Format: `<date> | <session-id> | <role> | <failure-class> | <verdict> | <one-lin
 2026-06-22 | 62904c66 | QA | missing-artifact | rejected→machine-specific | 6 Gherkin mutation survivors are known spec-coverage gaps — specifier to address in C2+ (memory-update, not project knowledge)
 2026-06-22 | c0e959b9 | specifier | convention-gap | rejected→swarmforge-only | completion-handoff retro: all actions swarmforge-scoped; no project promotions
 2026-06-22 | 633ecaab | integrator | tool-error | rejected→swarmforge-only | integrator merge retro: all actions swarmforge-scoped; no project promotions
+
+## 2026-06-22 — knowledge/c2-discovery run
+
+2026-06-22 | 53a47bde | architect | convention-gap | rejected→swarmforge-only | handoff draft reminder (short hash, role name check) — swarmforge-scoped
+2026-06-22 | 53a47bde | architect | convention-gap | rejected→swarmforge-only | long pre-action deliberation forcing function — swarmforge investigation
+2026-06-22 | dede7aa0 | cleaner | convention-gap | rejected→first-occurrence | gitignored fixture must exist on disk for qa-discovery-6 (acceptance/fixtures/c2_fixture/build/generated.py)
+2026-06-22 | dede7aa0 | cleaner | convention-gap | rejected→swarmforge-only | CRAP estimation bootstrap pattern — swarmforge/local-engineering update
+2026-06-22 | dede7aa0 | cleaner | tool-error | rejected→phenomenon | lines 86/92 partial branch misses in _discovery_io.py — promoted to hardender role file
+2026-06-22 | d161025e | coder | convention-gap | rejected→first-occurrence | replace_all unsafe when search string is substring of new name — use targeted Edit (skill action #1)
+2026-06-22 | d161025e | coder | convention-gap | rejected→first-occurrence | drywall step duplication: prefer named class in step_lib.py over module-level mutable state (skill action #4)
+2026-06-22 | d737e296 | hardender | convention-gap | rejected→swarmforge-only | check roles.tsv before handoff draft — swarmforge rule
+2026-06-22 | d737e296 | hardender | tool-error | rejected→swarmforge-only | mutmut timeout investigation (or→and guard) — swarmforge item
+2026-06-22 | (not-captured) | specifier | convention-gap | rejected→swarmforge-only | approval gate must be AskUserQuestion not passive trailing prose — swarmforge rule
+2026-06-22 | (not-captured) | specifier | tool-error | rejected→swarmforge-only | entire session current worktree mismatch in specifier — swarmforge investigation
+2026-06-22 | ce7a20cc | ux-engineer | missing-artifact | promoted→AGENTS.md | acceptance/fixtures/c2_fixture/build/generated.py must exist on disk (gitignored); absence fails qa-discovery-6
+2026-06-22 | ce7a20cc | ux-engineer | tool-error | promoted→.agents/skills/agent-retro-worktree-fallback | entire session current worktree mismatch (2nd occurrence): skip session info, use JSONL fallback
+2026-06-22 | ce7a20cc | ux-engineer | tool-error | promoted→.agents/skills/agent-retro-arc-fallback | conversation arc content null (2nd occurrence): fallback to in-context reconstruction
+2026-06-22 | ce7a20cc | ux-engineer | tool-error | rejected→machine-specific | rtk find produces garbled output with extra spaces — machine-local RTK behavior
+2026-06-22 | ce7a20cc | ux-engineer | convention-gap | rejected→swarmforge-only | git rev-parse --short=10 HEAD for handoff draft — swarmforge rule (recurring)
+2026-06-22 | 4ae7dcbc | curator | tool-error | rejected→first-occurrence | entire session info returns Session not found for active sessions — JSONL fallback is primary
+2026-06-22 | 4ae7dcbc | curator | tool-error | promoted→.agents/skills/agent-retro-worktree-fallback | agent-retro: after stale entire result, skip session info, go directly to JSONL (curator evidence)
+2026-06-22 | 2833ecee | QA | convention-gap | rejected→swarmforge-only | git rev-parse --short=10 HEAD for handoff draft — swarmforge rule (recurring)
+2026-06-22 | 2833ecee | QA | convention-gap | rejected→inferable | NOT AUTOMATED CLI absent guard in QA steps is correct — inferable from code
+2026-06-22 | 2833ecee | QA | convention-gap | rejected→swarmforge-only | rtk python -m crap4py fails — CRAP invocation is uv run python -m crap4py (swarmforge/local-engineering)
