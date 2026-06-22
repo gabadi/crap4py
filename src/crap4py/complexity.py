@@ -48,15 +48,28 @@ def _score_function(func_node: ast.AST) -> list[FunctionCC]:
 
 # --- Decision-point rules (ADR 0001) ---
 
-def _decision_points(node: ast.AST) -> int:
-    """Return decision points contributed by a single AST node."""
-    if isinstance(node, (ast.If, ast.ExceptHandler, ast.IfExp, ast.Assert)):
+_SIMPLE_BRANCH_NODES = (ast.If, ast.ExceptHandler, ast.IfExp, ast.Assert)
+_LOOP_NODES = (ast.For, ast.While)
+_COMPREHENSION_NODES = (ast.ListComp, ast.SetComp, ast.GeneratorExp, ast.DictComp)
+
+
+def _structural_decision_points(node: ast.AST) -> int | None:
+    """Return decision points for structural branch nodes, or None if not applicable."""
+    if isinstance(node, _SIMPLE_BRANCH_NODES):
         return 1
-    if isinstance(node, (ast.For, ast.While)):
+    if isinstance(node, _LOOP_NODES):
         return 1 + (1 if node.orelse else 0)
     if isinstance(node, ast.BoolOp):
         return len(node.values) - 1
-    if isinstance(node, (ast.ListComp, ast.SetComp, ast.GeneratorExp, ast.DictComp)):
+    return None
+
+
+def _decision_points(node: ast.AST) -> int:
+    """Return decision points contributed by a single AST node."""
+    structural = _structural_decision_points(node)
+    if structural is not None:
+        return structural
+    if isinstance(node, _COMPREHENSION_NODES):
         return _comprehension_points(node.generators)
     if isinstance(node, ast.match_case):
         return _match_case_points(node)

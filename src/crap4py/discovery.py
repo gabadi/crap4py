@@ -24,6 +24,55 @@ class FunctionEntry:
     line_range: tuple[int, int]
 
 
+def _io_defaults(root: str | None) -> tuple[
+    Callable[[list[str]], list[str]],
+    Callable[[str], str | None],
+    Callable[[str], str],
+]:
+    """Load and return the default filesystem IO adapters from _discovery_io."""
+    from crap4py._discovery_io import (
+        collect_source_files as _collect_all,
+        read_source as _read,
+        relative_label as _label_fn,
+    )
+    return (
+        lambda ps: _collect_all(ps, root),
+        _read,
+        lambda fp: _label_fn(fp, root),
+    )
+
+
+def _resolve_adapters(
+    root: str | None,
+    collect_files: Callable[[list[str]], list[str]] | None,
+    read_source: Callable[[str], str | None] | None,
+    file_label: Callable[[str], str] | None,
+) -> tuple[
+    Callable[[list[str]], list[str]],
+    Callable[[str], str | None],
+    Callable[[str], str],
+]:
+    """Return concrete IO adapter callables, filling missing ones from _io_defaults."""
+    supplied = (collect_files, read_source, file_label)
+    if all(fn is not None for fn in supplied):
+        return collect_files, read_source, file_label  # type: ignore[return-value]
+    defaults = _io_defaults(root)
+    resolved = tuple(fn if fn is not None else dflt for fn, dflt in zip(supplied, defaults))
+    return resolved  # type: ignore[return-value]
+
+
+def _parse_file(filepath: str, read_source: Callable[[str], str | None], file_label: Callable[[str], str]) -> list[FunctionEntry]:
+    """Parse one source file and return its function entries, skipping on read/parse error."""
+    source = read_source(filepath)
+    if source is None:
+        return []
+    try:
+        tree = ast.parse(source, filename=filepath)
+    except SyntaxError:
+        return []
+    return _extract_entries(tree, file_label(filepath))
+
+
 def discover_functions(
     paths: list[str],
     *,
@@ -40,29 +89,10 @@ def discover_functions(
     When called without adapter arguments, delegates file IO to
     ``crap4py._discovery_io``. Pass explicit callables to test without IO.
     """
-    if collect_files is None or read_source is None or file_label is None:
-        from crap4py._discovery_io import (
-            collect_source_files as _collect_all,
-            read_source as _read,
-            relative_label as _label_fn,
-        )
-        if collect_files is None:
-            collect_files = lambda ps: _collect_all(ps, root)
-        if read_source is None:
-            read_source = _read
-        if file_label is None:
-            file_label = lambda fp: _label_fn(fp, root)
+    collect_files, read_source, file_label = _resolve_adapters(root, collect_files, read_source, file_label)
     entries: list[FunctionEntry] = []
     for filepath in collect_files(paths):
-        label = file_label(filepath)
-        source = read_source(filepath)
-        if source is None:
-            continue
-        try:
-            tree = ast.parse(source, filename=filepath)
-        except SyntaxError:
-            continue
-        entries.extend(_extract_entries(tree, label))
+        entries.extend(_parse_file(filepath, read_source, file_label))
     return entries
 
 

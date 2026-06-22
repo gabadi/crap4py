@@ -35,6 +35,41 @@ _BrdaRecord = tuple[int, str, int]
 LcovData = dict[str, list[_BrdaRecord]]
 
 
+def _parse_brda(line: str) -> "_BrdaRecord | None":
+    """Parse a BRDA line body (after 'BRDA:') and return a record or None to skip."""
+    parts = line[5:].split(",", 3)
+    if len(parts) < 4:
+        return None
+    lineno = int(parts[0])
+    if lineno == 0:
+        return None
+    taken_raw = parts[3]
+    return (lineno, parts[2], 0 if taken_raw == "-" else int(taken_raw))
+
+
+class _LcovParseState:
+    """Mutable state carrier for the LCOV line-by-line parser."""
+    def __init__(self) -> None:
+        self.result: LcovData = {}
+        self.current_sf: str | None = None
+        self.current_records: list[_BrdaRecord] = []
+
+    def on_sf(self, path: str) -> None:
+        self.current_sf = path
+        self.current_records = []
+
+    def on_end_of_record(self) -> None:
+        if self.current_sf is not None:
+            self.result[self.current_sf] = self.current_records
+        self.current_sf = None
+        self.current_records = []
+
+    def on_brda(self, line: str) -> None:
+        record = _parse_brda(line)
+        if record is not None:
+            self.current_records.append(record)
+
+
 def parse_lcov(lcov_text: str) -> LcovData:
     """Parse LCOV text and return a dict mapping SF path → BRDA records.
 
@@ -42,33 +77,16 @@ def parse_lcov(lcov_text: str) -> LcovData:
     BRDA records with line=0 are skipped (coverage.py bug).
     taken="-" is normalised to 0.
     """
-    result: LcovData = {}
-    current_sf: str | None = None
-    current_records: list[_BrdaRecord] = []
-
+    state = _LcovParseState()
     for raw_line in lcov_text.splitlines():
         line = raw_line.strip()
         if line.startswith("SF:"):
-            current_sf = line[3:]
-            current_records = []
+            state.on_sf(line[3:])
         elif line == "end_of_record":
-            if current_sf is not None:
-                result[current_sf] = current_records
-            current_sf = None
-            current_records = []
-        elif line.startswith("BRDA:") and current_sf is not None:
-            parts = line[5:].split(",", 3)
-            if len(parts) < 4:
-                continue
-            lineno = int(parts[0])
-            if lineno == 0:
-                continue
-            branch_id = parts[2]
-            taken_raw = parts[3]
-            taken = 0 if taken_raw == "-" else int(taken_raw)
-            current_records.append((lineno, branch_id, taken))
-
-    return result
+            state.on_end_of_record()
+        elif line.startswith("BRDA:") and state.current_sf is not None:
+            state.on_brda(line)
+    return state.result
 
 
 def _match_sf(source_path: str, lcov_data: LcovData) -> list[_BrdaRecord] | None:
@@ -88,6 +106,12 @@ def _match_sf(source_path: str, lcov_data: LcovData) -> list[_BrdaRecord] | None
     return None
 
 
+def _branch_coverage_ratio(in_range: list[_BrdaRecord]) -> float:
+    """Compute taken/total ratio for a non-empty list of in-range BRDA records."""
+    taken_count = sum(1 for _, _, taken in in_range if taken >= 1)
+    return taken_count / len(in_range)
+
+
 def resolve_coverage(
     source_path: str,
     line_range: tuple[int, int],
@@ -105,9 +129,4 @@ def resolve_coverage(
 
     start, end = line_range
     in_range = [r for r in records if start <= r[0] <= end]
-
-    if not in_range:
-        return 1.0
-
-    taken_count = sum(1 for _, _, taken in in_range if taken >= 1)
-    return taken_count / len(in_range)
+    return 1.0 if not in_range else _branch_coverage_ratio(in_range)

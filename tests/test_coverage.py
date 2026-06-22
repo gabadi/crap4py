@@ -182,3 +182,43 @@ def test_na_sentinel_is_not_float():
 
 def test_na_sentinel_repr():
     assert str(NA) == "N/A"
+
+
+def test_na_repr_function():
+    assert repr(NA) == "N/A"
+
+
+def test_na_singleton_returns_same_instance():
+    from crap4py.coverage import _NA
+    a = _NA()
+    b = _NA()
+    assert a is b
+
+
+def test_parse_lcov_end_of_record_without_sf_is_ignored():
+    lcov = "TN:\nend_of_record\nSF:src/foo.py\nBRDA:5,0,0,1\nend_of_record\n"
+    result = parse_lcov(lcov)
+    assert "src/foo.py" in result
+    assert len(result) == 1
+
+
+def test_parse_lcov_brda_with_fewer_than_4_parts_is_skipped():
+    lcov = "TN:\nSF:src/foo.py\nBRDA:5,0,0\nBRDA:6,0,0,1\nend_of_record\n"
+    result = parse_lcov(lcov)
+    records = result["src/foo.py"]
+    assert len(records) == 1
+    assert records[0][0] == 6
+
+
+def test_match_sf_exact_path_without_prefix():
+    from crap4py.coverage import _match_sf
+    lcov_data = {"src/foo.py": [(1, "0", 1)]}
+    records = _match_sf("src/foo.py", lcov_data)
+    assert records is not None
+    assert len(records) == 1
+
+
+def test_coverage_windows_path_normalisation():
+    lcov_data = {"src\\foo.py": [(1, "0", 1), (2, "1", 0)]}
+    cov = resolve_coverage("src/foo.py", (1, 2), lcov_data)
+    assert cov == pytest.approx(0.5)

@@ -1,9 +1,9 @@
-"""CLI entrypoint for crap4py.
+"""CLI entrypoint for crap4py — thin adapter shell.
 
 Usage: uv run crap4py --lcov <lcov_file> <source_path> [<source_path> ...]
 
-Prints one row per discovered function with:
-  qualified_name  module_label  cc  coverage
+All report logic lives in crap4py._report; this module handles argument
+parsing, filesystem error checking, and printing only.
 """
 import argparse
 import sys
@@ -21,60 +21,19 @@ def main() -> None:
     parser.add_argument("paths", nargs="+", help="Source paths to analyse")
     args = parser.parse_args()
 
-    from crap4py.discovery import discover_functions
-    from crap4py.complexity import cyclomatic_complexity
-    from crap4py.coverage import parse_lcov, resolve_coverage, NA
+    from crap4py._report import build_rows, format_table
 
-    lcov_path = args.lcov
-    if not os.path.isfile(lcov_path):
-        print(f"error: LCOV file not found: {lcov_path}", file=sys.stderr)
+    if not os.path.isfile(args.lcov):
+        print(f"error: LCOV file not found: {args.lcov}", file=sys.stderr)
         sys.exit(1)
 
-    with open(lcov_path) as f:
-        lcov_text = f.read()
-    lcov_data = parse_lcov(lcov_text)
+    try:
+        rows = build_rows(args.lcov, args.paths)
+    except OSError as e:
+        print(f"error: {e}", file=sys.stderr)
+        sys.exit(1)
 
-    entries = discover_functions(args.paths)
-
-    rows = []
-    for entry in entries:
-        src_path = entry.module_label
-        try:
-            with open(src_path) as f:
-                source = f.read()
-        except OSError:
-            continue
-
-        cc_results = {r.name: r.cc for r in cyclomatic_complexity(source)}
-        qualified = entry.qualified_name
-        bare_name = qualified.rsplit(".", 1)[-1]
-        cc = cc_results.get(bare_name, 1)
-
-        cov = resolve_coverage(src_path, entry.line_range, lcov_data)
-        if cov is NA:
-            cov_str = "N/A"
-        else:
-            cov_str = f"{float(cov):.4g}" if float(cov) not in (0.0, 1.0) else (
-                "0.0" if float(cov) == 0.0 else "1.0"
-            )
-
-        rows.append((qualified, entry.module_label, cc, cov_str))
-
-    if not rows:
-        print("no functions found")
-        return
-
-    col_w = [
-        max(len("function"), max(len(r[0]) for r in rows)),
-        max(len("module"), max(len(r[1]) for r in rows)),
-        max(len("cc"), max(len(str(r[2])) for r in rows)),
-        max(len("coverage"), max(len(r[3]) for r in rows)),
-    ]
-    fmt = "  ".join(f"{{:<{w}}}" for w in col_w)
-    print(fmt.format("function", "module", "cc", "coverage"))
-    print("  ".join("-" * w for w in col_w))
-    for qname, mod, cc, cov_str in rows:
-        print(fmt.format(qname, mod, cc, cov_str))
+    print(format_table(rows))
 
 
 if __name__ == "__main__":
