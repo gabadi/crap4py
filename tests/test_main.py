@@ -29,11 +29,11 @@ def test_main_prints_table_for_valid_input(tmp_path, monkeypatch, capsys):
     from crap4py.__main__ import main
     main()
     captured = capsys.readouterr()
-    assert "function" in captured.out
+    assert "Function" in captured.out
     assert "add" in captured.out
 
 
-def test_main_oserror_from_build_rows(tmp_path, monkeypatch, capsys):
+def test_main_oserror_from_build_report(tmp_path, monkeypatch, capsys):
     lcov_file = tmp_path / "coverage.lcov"
     lcov_file.write_text("TN:\nend_of_record\n")
     monkeypatch.setattr(sys, "argv", ["crap4py", "--lcov", str(lcov_file), str(tmp_path)])
@@ -41,7 +41,7 @@ def test_main_oserror_from_build_rows(tmp_path, monkeypatch, capsys):
     import crap4py._report as report_mod
     def raise_oserror(*args, **kwargs):
         raise OSError("disk full")
-    monkeypatch.setattr(report_mod, "build_rows", raise_oserror)
+    monkeypatch.setattr(report_mod, "build_report", raise_oserror)
 
     from crap4py.__main__ import main
     with pytest.raises(SystemExit) as exc:
@@ -101,7 +101,7 @@ def test_main_paths_argument_accepted(monkeypatch, tmp_path, capsys):
     from crap4py.__main__ import main
     main()
     captured = capsys.readouterr()
-    assert "function" in captured.out
+    assert "Function" in captured.out
 
 
 def test_main_paths_accepts_multiple_paths(monkeypatch, tmp_path, capsys):
@@ -121,3 +121,102 @@ def test_main_paths_accepts_multiple_paths(monkeypatch, tmp_path, capsys):
     captured = capsys.readouterr()
     assert "fn_a" in captured.out
     assert "fn_b" in captured.out
+
+
+def test_main_max_crap_exits_nonzero_when_exceeded(tmp_path, monkeypatch, capsys):
+    src_file = tmp_path / "foo.py"
+    src_file.write_text(_SIMPLE_SOURCE)
+    from crap4py.discovery import discover_functions
+    entries = discover_functions([str(tmp_path)])
+    label = entries[0].module_label
+    lcov_file = tmp_path / "coverage.lcov"
+    lcov_file.write_text(f"TN:\nSF:{label}\nend_of_record\n")
+    monkeypatch.setattr(
+        sys, "argv",
+        ["crap4py", "--lcov", str(lcov_file), "--max-crap", "0.5", str(tmp_path)],
+    )
+    from crap4py.__main__ import main
+    with pytest.raises(SystemExit) as exc:
+        main()
+    assert exc.value.code != 0
+
+
+def test_main_max_crap_exits_zero_when_not_exceeded(tmp_path, monkeypatch, capsys):
+    src_file = tmp_path / "foo.py"
+    src_file.write_text(_SIMPLE_SOURCE)
+    from crap4py.discovery import discover_functions
+    entries = discover_functions([str(tmp_path)])
+    label = entries[0].module_label
+    lcov_file = tmp_path / "coverage.lcov"
+    lcov_file.write_text(f"TN:\nSF:{label}\nBRDA:1,0,0,1\nend_of_record\n")
+    monkeypatch.setattr(
+        sys, "argv",
+        ["crap4py", "--lcov", str(lcov_file), "--max-crap", "9999", str(tmp_path)],
+    )
+    from crap4py.__main__ import main
+    main()
+    captured = capsys.readouterr()
+    assert "Function" in captured.out
+
+
+def test_main_max_workers_invalid_exits_error(tmp_path, monkeypatch, capsys):
+    lcov_file = tmp_path / "coverage.lcov"
+    lcov_file.write_text("TN:\nend_of_record\n")
+    monkeypatch.setattr(
+        sys, "argv",
+        ["crap4py", "--lcov", str(lcov_file), "--max-workers", "abc", str(tmp_path)],
+    )
+    from crap4py.__main__ import main
+    with pytest.raises(SystemExit) as exc:
+        main()
+    assert exc.value.code == 1
+    captured = capsys.readouterr()
+    assert "error" in captured.err.lower()
+
+
+def test_main_max_workers_zero_exits_error(tmp_path, monkeypatch, capsys):
+    lcov_file = tmp_path / "coverage.lcov"
+    lcov_file.write_text("TN:\nend_of_record\n")
+    monkeypatch.setattr(
+        sys, "argv",
+        ["crap4py", "--lcov", str(lcov_file), "--max-workers", "0", str(tmp_path)],
+    )
+    from crap4py.__main__ import main
+    with pytest.raises(SystemExit) as exc:
+        main()
+    assert exc.value.code == 1
+
+
+def test_main_max_workers_valid_runs_normally(tmp_path, monkeypatch, capsys):
+    lcov_file = tmp_path / "coverage.lcov"
+    lcov_file.write_text("TN:\nend_of_record\n")
+    monkeypatch.setattr(
+        sys, "argv",
+        ["crap4py", "--lcov", str(lcov_file), "--max-workers", "4", str(tmp_path)],
+    )
+    from crap4py.__main__ import main
+    main()
+    captured = capsys.readouterr()
+    assert "Function" in captured.out
+
+
+def test_main_max_crap_na_rows_not_counted_for_gate(tmp_path, monkeypatch, capsys):
+    src_file = tmp_path / "foo.py"
+    src_file.write_text(_SIMPLE_SOURCE)
+    lcov_file = tmp_path / "coverage.lcov"
+    lcov_file.write_text("TN:\nend_of_record\n")
+    monkeypatch.setattr(
+        sys, "argv",
+        ["crap4py", "--lcov", str(lcov_file), "--max-crap", "0.5", str(tmp_path)],
+    )
+    from crap4py.__main__ import main
+    from crap4py.coverage import NA
+    from crap4py._crap import ReportRow
+    import crap4py._report as report_mod
+
+    na_rows = [ReportRow("add", str(tmp_path / "foo.py"), 1, NA)]
+    monkeypatch.setattr(report_mod, "build_report", lambda *a, **kw: na_rows)
+
+    main()
+    captured = capsys.readouterr()
+    assert "N/A" in captured.out

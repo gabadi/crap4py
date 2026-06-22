@@ -14,12 +14,14 @@ declare -A STEPS_MAP
 STEPS_MAP[complexity]="complexity_steps"
 STEPS_MAP[discovery]="discovery_steps"
 STEPS_MAP[coverage]="coverage_steps"
+STEPS_MAP[report]="report_steps"
 
 # QA feature → steps module mapping (run separately; no Gherkin mutation)
 declare -A QA_STEPS_MAP
 QA_STEPS_MAP[complexity_qa]="complexity_qa_steps"
 QA_STEPS_MAP[discovery_qa]="discovery_qa_steps"
 QA_STEPS_MAP[coverage_qa]="coverage_qa_steps"
+QA_STEPS_MAP[report_qa]="report_qa_steps"
 
 FAILED=0
 PASSED=0
