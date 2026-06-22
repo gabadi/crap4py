@@ -3,10 +3,18 @@
 Implements ADR 0003: qualified name uses enclosing classes only; module label
 is caller-supplied; line range is the def node's own span.
 
-IO (file walking, gitignore) lives in _discovery_io.py.
+IO (file walking, gitignore) lives in _discovery_io.py. This module owns only
+the pure-AST traversal; it does not import os, sys, or pathlib.
+
+``discover_functions`` accepts optional IO adapter callables so the AST logic
+can be exercised without touching the filesystem. When called with no adapters
+the real filesystem adapters from ``_discovery_io`` are used as defaults —
+this single inward call is the only cross-boundary touch in this module, and
+it is deferred to call time so tests can inject stubs without importing IO.
 """
 import ast
 from dataclasses import dataclass
+from typing import Callable
 
 
 @dataclass
@@ -16,15 +24,37 @@ class FunctionEntry:
     line_range: tuple[int, int]
 
 
-def discover_functions(paths: list[str]) -> list[FunctionEntry]:
+def discover_functions(
+    paths: list[str],
+    *,
+    root: str | None = None,
+    collect_files: Callable[[list[str]], list[str]] | None = None,
+    read_source: Callable[[str], str | None] | None = None,
+    file_label: Callable[[str], str] | None = None,
+) -> list[FunctionEntry]:
     """Discover all def/async def under the given source paths.
 
-    Delegates file collection to the IO adapter so this module stays IO-free.
+    ``root`` sets the working-directory anchor for gitignore and relative
+    labels. Defaults to ``os.getcwd()`` via the IO adapter.
+
+    When called without adapter arguments, delegates file IO to
+    ``crap4py._discovery_io``. Pass explicit callables to test without IO.
     """
-    from crap4py._discovery_io import collect_source_files, read_source, relative_label
+    if collect_files is None or read_source is None or file_label is None:
+        from crap4py._discovery_io import (
+            collect_source_files as _collect_all,
+            read_source as _read,
+            relative_label as _label_fn,
+        )
+        if collect_files is None:
+            collect_files = lambda ps: _collect_all(ps, root)
+        if read_source is None:
+            read_source = _read
+        if file_label is None:
+            file_label = lambda fp: _label_fn(fp, root)
     entries: list[FunctionEntry] = []
-    for filepath in collect_source_files(paths):
-        label = relative_label(filepath)
+    for filepath in collect_files(paths):
+        label = file_label(filepath)
         source = read_source(filepath)
         if source is None:
             continue

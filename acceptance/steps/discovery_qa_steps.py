@@ -61,12 +61,7 @@ def given_expected_qualified(m, params):
     # Verify fixture source contains this function
     sys.path.insert(0, os.path.join(_REPO_ROOT, "src"))
     from crap4py.discovery import discover_functions
-    old_cwd = os.getcwd()
-    os.chdir(_REPO_ROOT)
-    try:
-        entries = discover_functions([_C2_FIXTURE_ROOT])
-    finally:
-        os.chdir(old_cwd)
+    entries = discover_functions([_C2_FIXTURE_ROOT], root=_REPO_ROOT)
     names = [e.qualified_name for e in entries]
     assert qualified in names, f"Fixture missing '{qualified}'; discovered: {names}"
 
@@ -95,12 +90,7 @@ def given_fixture_nested(m, params):
     inner = params.get("inner") or m.group(2)
     sys.path.insert(0, os.path.join(_REPO_ROOT, "src"))
     from crap4py.discovery import discover_functions
-    old_cwd = os.getcwd()
-    os.chdir(_REPO_ROOT)
-    try:
-        entries = discover_functions([_C2_FIXTURE_ROOT])
-    finally:
-        os.chdir(old_cwd)
+    entries = discover_functions([_C2_FIXTURE_ROOT], root=_REPO_ROOT)
     names = [e.qualified_name for e in entries]
     assert outer in names, f"Fixture missing outer '{outer}'; got {names}"
     assert inner in names, f"Fixture missing inner '{inner}'; got {names}"
@@ -116,12 +106,7 @@ def given_fixture_decorated_method(m, params):
     expected = f"{cls}.{method}"
     sys.path.insert(0, os.path.join(_REPO_ROOT, "src"))
     from crap4py.discovery import discover_functions
-    old_cwd = os.getcwd()
-    os.chdir(_REPO_ROOT)
-    try:
-        entries = discover_functions([_C2_FIXTURE_ROOT])
-    finally:
-        os.chdir(old_cwd)
+    entries = discover_functions([_C2_FIXTURE_ROOT], root=_REPO_ROOT)
     names = [e.qualified_name for e in entries]
     assert expected in names, f"Fixture missing '{expected}'; got {names}"
 
@@ -134,12 +119,7 @@ def given_function_in_file(m, params):
     rel_path = params.get("rel_path") or m.group(2)
     sys.path.insert(0, os.path.join(_REPO_ROOT, "src"))
     from crap4py.discovery import discover_functions
-    old_cwd = os.getcwd()
-    os.chdir(_REPO_ROOT)
-    try:
-        entries = discover_functions([_C2_FIXTURE_ROOT])
-    finally:
-        os.chdir(old_cwd)
+    entries = discover_functions([_C2_FIXTURE_ROOT], root=_REPO_ROOT)
     matching = [e for e in entries if e.qualified_name == function]
     assert matching, f"No entry '{function}' in fixture; got {[e.qualified_name for e in entries]}"
     actual_label = matching[0].module_label

@@ -172,10 +172,7 @@ def given_tree_with_test_file(m, params):
     os.makedirs(tst_dir, exist_ok=True)
     with open(os.path.join(d, *tst_parts), "w") as f:
         f.write("def test_sentinel(): pass\n")
-    old_cwd = os.getcwd()
-    os.chdir(d)
-    ctx.entries = discover_functions([d])
-    os.chdir(old_cwd)
+    ctx.entries = discover_functions([d], root=d)
     if ctx.tmpdir:
         import shutil
         shutil.rmtree(ctx.tmpdir, ignore_errors=True)
@@ -218,10 +215,7 @@ def given_non_ignored_source(m, params):
     os.makedirs(kept_dir, exist_ok=True)
     with open(os.path.join(d, *kept_parts), "w") as f:
         f.write("def kept_fn(): pass\n")
-    old_cwd = os.getcwd()
-    os.chdir(d)
-    ctx.entries = discover_functions([d])
-    os.chdir(old_cwd)
+    ctx.entries = discover_functions([d], root=d)
     import shutil
     shutil.rmtree(d, ignore_errors=True)
     ctx.tmpdir = None

@@ -2,13 +2,17 @@
 
 Owns filesystem access: file walking, gitignore reading, source reading.
 Keeps src/crap4py/discovery.py free of IO imports so the arch test passes.
+
+All functions that produce CWD-relative output accept an explicit ``root``
+parameter (defaulting to the actual cwd) so callers can be tested without
+``os.chdir``.
 """
 import fnmatch
 import os
 
 
-def relative_label(filepath: str) -> str:
-    return os.path.relpath(filepath, os.getcwd())
+def relative_label(filepath: str, root: str | None = None) -> str:
+    return os.path.relpath(filepath, root or os.getcwd())
 
 
 def read_source(filepath: str) -> str | None:
@@ -23,44 +27,45 @@ def _is_test_file(name: str) -> bool:
     return name.startswith("test_") or name.endswith("_test.py")
 
 
-def _is_acceptable_source_file(filepath: str, patterns: list[str]) -> bool:
+def _is_acceptable_source_file(filepath: str, patterns: list[str], root: str) -> bool:
     return (
         filepath.endswith(".py")
         and not _is_test_file(os.path.basename(filepath))
-        and not _is_gitignored(filepath, patterns)
+        and not _is_gitignored(filepath, patterns, root)
     )
 
 
-def collect_source_files(paths: list[str]) -> list[str]:
-    patterns = _load_gitignore_patterns()
+def collect_source_files(paths: list[str], root: str | None = None) -> list[str]:
+    cwd = root or os.getcwd()
+    patterns = _load_gitignore_patterns(cwd)
     result: list[str] = []
     for path in paths:
         if os.path.isfile(path):
-            if _is_acceptable_source_file(path, patterns):
+            if _is_acceptable_source_file(path, patterns, cwd):
                 result.append(path)
         elif os.path.isdir(path):
-            result.extend(_walk_dir(path, patterns))
+            result.extend(_walk_dir(path, patterns, cwd))
     return result
 
 
-def _walk_dir(root: str, patterns: list[str]) -> list[str]:
+def _walk_dir(dir_root: str, patterns: list[str], cwd: str) -> list[str]:
     files: list[str] = []
-    for dirpath, dirnames, filenames in os.walk(root):
+    for dirpath, dirnames, filenames in os.walk(dir_root):
         dirnames[:] = sorted(
             d for d in dirnames
-            if not _is_gitignored(os.path.join(dirpath, d), patterns)
+            if not _is_gitignored(os.path.join(dirpath, d), patterns, cwd)
         )
         accepted = [
             os.path.join(dirpath, fname)
             for fname in sorted(filenames)
-            if _is_acceptable_source_file(os.path.join(dirpath, fname), patterns)
+            if _is_acceptable_source_file(os.path.join(dirpath, fname), patterns, cwd)
         ]
         files.extend(accepted)
     return files
 
 
-def _load_gitignore_patterns() -> list[str]:
-    gitignore_path = os.path.join(os.getcwd(), ".gitignore")
+def _load_gitignore_patterns(cwd: str) -> list[str]:
+    gitignore_path = os.path.join(cwd, ".gitignore")
     if not os.path.isfile(gitignore_path):
         return []
     with open(gitignore_path) as f:
@@ -71,8 +76,8 @@ def _load_gitignore_patterns() -> list[str]:
         ]
 
 
-def _is_gitignored(path: str, patterns: list[str]) -> bool:
-    rel = os.path.relpath(path, os.getcwd())
+def _is_gitignored(path: str, patterns: list[str], cwd: str) -> bool:
+    rel = os.path.relpath(path, cwd)
     rel_fwd = rel.replace("\\", "/")
     name = os.path.basename(path)
     return any(_fnmatch_path(rel_fwd, name, pattern) for pattern in patterns)

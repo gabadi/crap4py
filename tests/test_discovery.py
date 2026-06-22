@@ -8,7 +8,7 @@ import os
 import textwrap
 import pytest
 from crap4py.discovery import FunctionEntry, _extract_entries, discover_functions
-from crap4py._discovery_io import collect_source_files as _collect_source_files
+from crap4py._discovery_io import collect_source_files as _collect_source_files, relative_label
 
 
 def parse_entries(source: str, label: str = "test.py") -> list[FunctionEntry]:
@@ -198,29 +198,19 @@ def test_decorated_range_starts_at_def():
 def test_test_prefix_file_skipped(tmp_path):
     (tmp_path / "test_cli.py").write_text("def test_runs(): pass\n")
     (tmp_path / "cli.py").write_text("def main(): pass\n")
-    orig = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        entries = discover_functions([str(tmp_path)])
-        ns = names(entries)
-        assert "main" in ns
-        assert "test_runs" not in ns
-    finally:
-        os.chdir(orig)
+    entries = discover_functions([str(tmp_path)], root=str(tmp_path))
+    ns = names(entries)
+    assert "main" in ns
+    assert "test_runs" not in ns
 
 
 def test_test_suffix_file_skipped(tmp_path):
     (tmp_path / "cli_test.py").write_text("def test_it(): pass\n")
     (tmp_path / "cli.py").write_text("def run(): pass\n")
-    orig = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        entries = discover_functions([str(tmp_path)])
-        ns = names(entries)
-        assert "run" in ns
-        assert "test_it" not in ns
-    finally:
-        os.chdir(orig)
+    entries = discover_functions([str(tmp_path)], root=str(tmp_path))
+    ns = names(entries)
+    assert "run" in ns
+    assert "test_it" not in ns
 
 
 # --- discovery-12: .gitignore paths not scored ---
@@ -233,15 +223,10 @@ def test_gitignored_path_skipped(tmp_path):
     src_dir.mkdir()
     (src_dir / "cli.py").write_text("def kept(): pass\n")
     (tmp_path / ".gitignore").write_text(".venv/\n")
-    orig = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        entries = discover_functions([str(tmp_path)])
-        ns = names(entries)
-        assert "kept" in ns
-        assert "ignored_fn" not in ns
-    finally:
-        os.chdir(orig)
+    entries = discover_functions([str(tmp_path)], root=str(tmp_path))
+    ns = names(entries)
+    assert "kept" in ns
+    assert "ignored_fn" not in ns
 
 
 def test_build_dir_gitignored(tmp_path):
@@ -252,15 +237,10 @@ def test_build_dir_gitignored(tmp_path):
     src_dir.mkdir()
     (src_dir / "cli.py").write_text("def kept(): pass\n")
     (tmp_path / ".gitignore").write_text("build/\n")
-    orig = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        entries = discover_functions([str(tmp_path)])
-        ns = names(entries)
-        assert "kept" in ns
-        assert "gen" not in ns
-    finally:
-        os.chdir(orig)
+    entries = discover_functions([str(tmp_path)], root=str(tmp_path))
+    ns = names(entries)
+    assert "kept" in ns
+    assert "gen" not in ns
 
 
 # --- discovery-13: error resilience ---
@@ -271,30 +251,22 @@ def test_unreadable_file_skipped(tmp_path):
     bad_file = tmp_path / "bad.py"
     bad_file.write_text("def bad(): pass\n")
     bad_file.chmod(0o000)
-    orig = os.getcwd()
-    os.chdir(tmp_path)
     try:
-        entries = discover_functions([str(tmp_path)])
+        entries = discover_functions([str(tmp_path)], root=str(tmp_path))
         ns = names(entries)
         assert "good" in ns
         assert "bad" not in ns
     finally:
         bad_file.chmod(0o644)
-        os.chdir(orig)
 
 
 def test_syntax_error_file_skipped(tmp_path):
     (tmp_path / "broken.py").write_text("def broken(\n")
     (tmp_path / "fine.py").write_text("def fine(): pass\n")
-    orig = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        entries = discover_functions([str(tmp_path)])
-        ns = names(entries)
-        assert "fine" in ns
-        assert "broken" not in ns
-    finally:
-        os.chdir(orig)
+    entries = discover_functions([str(tmp_path)], root=str(tmp_path))
+    ns = names(entries)
+    assert "fine" in ns
+    assert "broken" not in ns
 
 
 # --- discovery-14: non-py file passed directly is ignored ---
@@ -302,15 +274,13 @@ def test_syntax_error_file_skipped(tmp_path):
 def test_non_py_file_path_ignored(tmp_path):
     (tmp_path / "notes.txt").write_text("def foo(): pass\n")
     (tmp_path / "main.py").write_text("def main(): pass\n")
-    orig = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        entries = discover_functions([str(tmp_path / "notes.txt"), str(tmp_path / "main.py")])
-        ns = names(entries)
-        assert "main" in ns
-        assert "foo" not in ns
-    finally:
-        os.chdir(orig)
+    entries = discover_functions(
+        [str(tmp_path / "notes.txt"), str(tmp_path / "main.py")],
+        root=str(tmp_path),
+    )
+    ns = names(entries)
+    assert "main" in ns
+    assert "foo" not in ns
 
 
 # --- discovery-15: gitignore with comments and blank lines ---
@@ -318,14 +288,9 @@ def test_non_py_file_path_ignored(tmp_path):
 def test_gitignore_comments_and_blanks_ignored(tmp_path):
     (tmp_path / "main.py").write_text("def main(): pass\n")
     (tmp_path / ".gitignore").write_text("# comment\n\n*.pyc\n")
-    orig = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        entries = discover_functions([str(tmp_path)])
-        ns = names(entries)
-        assert "main" in ns
-    finally:
-        os.chdir(orig)
+    entries = discover_functions([str(tmp_path)], root=str(tmp_path))
+    ns = names(entries)
+    assert "main" in ns
 
 
 # --- discovery-16: gitignore path-pattern (contains slash) ---
@@ -336,15 +301,10 @@ def test_gitignore_slash_pattern_matches_path(tmp_path):
     (nested / "bundle.py").write_text("def bundled(): pass\n")
     (tmp_path / "main.py").write_text("def main(): pass\n")
     (tmp_path / ".gitignore").write_text("dist/\n")
-    orig = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        entries = discover_functions([str(tmp_path)])
-        ns = names(entries)
-        assert "main" in ns
-        assert "bundled" not in ns
-    finally:
-        os.chdir(orig)
+    entries = discover_functions([str(tmp_path)], root=str(tmp_path))
+    ns = names(entries)
+    assert "main" in ns
+    assert "bundled" not in ns
 
 
 def test_gitignore_exact_path_pattern(tmp_path):
@@ -353,15 +313,10 @@ def test_gitignore_exact_path_pattern(tmp_path):
     special.write_text("def vendored(): pass\n")
     (tmp_path / "main.py").write_text("def main(): pass\n")
     (tmp_path / ".gitignore").write_text("vendor/lib.py\n")
-    orig = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        entries = discover_functions([str(tmp_path)])
-        ns = names(entries)
-        assert "main" in ns
-        assert "vendored" not in ns
-    finally:
-        os.chdir(orig)
+    entries = discover_functions([str(tmp_path)], root=str(tmp_path))
+    ns = names(entries)
+    assert "main" in ns
+    assert "vendored" not in ns
 
 
 # --- discovery-17: gitignore glob matching by name component ---
@@ -370,15 +325,10 @@ def test_gitignore_glob_name_pattern(tmp_path):
     (tmp_path / "generated_code.py").write_text("def gen(): pass\n")
     (tmp_path / "main.py").write_text("def main(): pass\n")
     (tmp_path / ".gitignore").write_text("generated_*.py\n")
-    orig = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        entries = discover_functions([str(tmp_path)])
-        ns = names(entries)
-        assert "main" in ns
-        assert "gen" not in ns
-    finally:
-        os.chdir(orig)
+    entries = discover_functions([str(tmp_path)], root=str(tmp_path))
+    ns = names(entries)
+    assert "main" in ns
+    assert "gen" not in ns
 
 
 # --- discovery-18: class inside function body ---
@@ -402,23 +352,13 @@ def test_gitignored_file_path_directly_skipped(tmp_path):
     cached = tmp_path / "cached.py"
     cached.write_text("def cached(): pass\n")
     (tmp_path / ".gitignore").write_text("cached.py\n")
-    orig = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        entries = discover_functions([str(cached)])
-        assert names(entries) == []
-    finally:
-        os.chdir(orig)
+    entries = discover_functions([str(cached)], root=str(tmp_path))
+    assert names(entries) == []
 
 
 def test_nonexistent_path_ignored(tmp_path):
-    orig = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        entries = discover_functions([str(tmp_path / "missing.py")])
-        assert entries == []
-    finally:
-        os.chdir(orig)
+    entries = discover_functions([str(tmp_path / "missing.py")], root=str(tmp_path))
+    assert entries == []
 
 
 def test_gitignore_exact_file_match(tmp_path):
@@ -426,15 +366,10 @@ def test_gitignore_exact_file_match(tmp_path):
     special.write_text("def lib_fn(): pass\n")
     (tmp_path / "main.py").write_text("def main(): pass\n")
     (tmp_path / ".gitignore").write_text("lib.py\n")
-    orig = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        entries = discover_functions([str(tmp_path)])
-        ns = names(entries)
-        assert "main" in ns
-        assert "lib_fn" not in ns
-    finally:
-        os.chdir(orig)
+    entries = discover_functions([str(tmp_path)], root=str(tmp_path))
+    ns = names(entries)
+    assert "main" in ns
+    assert "lib_fn" not in ns
 
 
 def test_gitignore_dir_slash_exact_rel_match(tmp_path):
@@ -445,15 +380,10 @@ def test_gitignore_dir_slash_exact_rel_match(tmp_path):
     (out_dir / "result.py").write_text("def result(): pass\n")
     (tmp_path / "main.py").write_text("def main(): pass\n")
     (tmp_path / ".gitignore").write_text("out/\n")
-    orig = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        entries = discover_functions([str(tmp_path)])
-        ns = names(entries)
-        assert "main" in ns
-        assert "result" not in ns
-    finally:
-        os.chdir(orig)
+    entries = discover_functions([str(tmp_path)], root=str(tmp_path))
+    ns = names(entries)
+    assert "main" in ns
+    assert "result" not in ns
 
 
 def test_gitignore_glob_path_component(tmp_path):
@@ -464,15 +394,10 @@ def test_gitignore_glob_path_component(tmp_path):
     (sub / "helpers.py").write_text("def help_fn(): pass\n")
     (tmp_path / "main.py").write_text("def main(): pass\n")
     (tmp_path / ".gitignore").write_text("sub\n")
-    orig = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        entries = discover_functions([str(tmp_path)])
-        ns = names(entries)
-        assert "main" in ns
-        assert "help_fn" not in ns
-    finally:
-        os.chdir(orig)
+    entries = discover_functions([str(tmp_path)], root=str(tmp_path))
+    ns = names(entries)
+    assert "main" in ns
+    assert "help_fn" not in ns
 
 
 def test_walk_dir_gitignored_file_skipped(tmp_path):
@@ -481,12 +406,51 @@ def test_walk_dir_gitignored_file_skipped(tmp_path):
     (sub / "cached.py").write_text("def cached(): pass\n")
     (tmp_path / "main.py").write_text("def main(): pass\n")
     (tmp_path / ".gitignore").write_text("sub/cached.py\n")
-    orig = os.getcwd()
-    os.chdir(tmp_path)
-    try:
-        entries = discover_functions([str(tmp_path)])
-        ns = names(entries)
-        assert "main" in ns
-        assert "cached" not in ns
-    finally:
-        os.chdir(orig)
+    entries = discover_functions([str(tmp_path)], root=str(tmp_path))
+    ns = names(entries)
+    assert "main" in ns
+    assert "cached" not in ns
+
+
+# --- mutant killers ---
+
+def test_relative_label_no_root_uses_cwd(tmp_path):
+    filepath = str(tmp_path / "mod.py")
+    cwd = os.getcwd()
+    expected = os.path.relpath(filepath, cwd)
+    assert relative_label(filepath) == expected
+    assert relative_label(filepath, None) == expected
+
+
+def test_relative_label_explicit_root_differs_from_cwd(tmp_path):
+    parent = tmp_path / "project"
+    parent.mkdir()
+    filepath = str(parent / "src" / "mod.py")
+    label_with_root = relative_label(filepath, str(parent))
+    label_with_cwd = relative_label(filepath, os.getcwd())
+    assert label_with_root != label_with_cwd or str(parent) == os.getcwd()
+    assert label_with_root == os.path.relpath(filepath, str(parent))
+
+
+def test_gitignore_trailing_slash_in_pattern_stripped(tmp_path):
+    ignored = tmp_path / "build"
+    ignored.mkdir()
+    (ignored / "out.py").write_text("def gen(): pass\n")
+    (tmp_path / "main.py").write_text("def main(): pass\n")
+    (tmp_path / ".gitignore").write_text("build/\n")
+    entries = discover_functions([str(tmp_path)], root=str(tmp_path))
+    ns = names(entries)
+    assert "main" in ns
+    assert "gen" not in ns
+
+
+def test_gitignore_pattern_ending_with_x_still_matches(tmp_path):
+    ignored = tmp_path / "fooX"
+    ignored.mkdir()
+    (ignored / "mod.py").write_text("def hidden(): pass\n")
+    (tmp_path / "main.py").write_text("def main(): pass\n")
+    (tmp_path / ".gitignore").write_text("fooX/\n")
+    entries = discover_functions([str(tmp_path)], root=str(tmp_path))
+    ns = names(entries)
+    assert "main" in ns
+    assert "hidden" not in ns
