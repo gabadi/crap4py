@@ -10,52 +10,23 @@ NOT AUTOMATED status:
   CLI is absent. Re-enable by removing the CLI_AVAILABLE guard once C4 lands.
 """
 import re
-import subprocess
 import sys
 import os
 
-from acceptance.steps.step_lib import make_registry
+from acceptance.steps.step_lib import make_registry, check_cli_available, run_cli, QAState
 
 _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-_FIXTURE_PY = os.path.join(_REPO_ROOT, "acceptance", "fixtures", "c1_fixture.py")
-_FIXTURE_LCOV = os.path.join(_REPO_ROOT, "acceptance", "fixtures", "c1_fixture.lcov")
+_C1_FIXTURE_PY = os.path.join(_REPO_ROOT, "acceptance", "fixtures", "c1_fixture.py")
+_C1_FIXTURE_LCOV = os.path.join(_REPO_ROOT, "acceptance", "fixtures", "c1_fixture.lcov")
 
-# Guard: CLI is available when crap4py exposes a __main__ entrypoint.
-def _cli_available() -> bool:
-    result = subprocess.run(
-        ["uv", "run", "python", "-c", "import crap4py.__main__"],
-        cwd=_REPO_ROOT,
-        capture_output=True,
-    )
-    return result.returncode == 0
-
-
-CLI_AVAILABLE = _cli_available()
-
-
-class QAContext:
-    def __init__(self):
-        self.report_output: str = ""
-        self.fixture_py: str = _FIXTURE_PY
-        self.fixture_lcov: str = _FIXTURE_LCOV
-
-
-ctx = QAContext()
+CLI_AVAILABLE = check_cli_available()
+ctx = QAState(_C1_FIXTURE_PY, _C1_FIXTURE_LCOV)
 
 STEP_HANDLERS, step, run_step = make_registry()
 
 
 def _run_cli() -> str:
-    """Run 'uv run crap4py --lcov <lcov> <src>' and return stdout."""
-    if not CLI_AVAILABLE:
-        return ""
-    result = subprocess.run(
-        ["uv", "run", "crap4py", "--lcov", ctx.fixture_lcov, ctx.fixture_py],
-        cwd=_REPO_ROOT,
-        capture_output=True,
-        text=True,
-    )
-    return result.stdout
+    return run_cli(ctx.lcov_path, ctx.source_path, CLI_AVAILABLE)
 
 
 def _extract_cc(report: str, func_name: str) -> int | None:
@@ -72,8 +43,8 @@ def _extract_cc(report: str, func_name: str) -> int | None:
 
 @step(r"a committed Python fixture file and a matching LCOV file")
 def given_fixture_files(m, params):
-    assert os.path.isfile(ctx.fixture_py), f"Fixture missing: {ctx.fixture_py}"
-    assert os.path.isfile(ctx.fixture_lcov), f"Fixture missing: {ctx.fixture_lcov}"
+    assert os.path.isfile(ctx.source_path), f"Fixture missing: {ctx.source_path}"
+    assert os.path.isfile(ctx.lcov_path), f"Fixture missing: {ctx.lcov_path}"
 
 
 @step(r'the command "uv run crap4py --lcov <lcov> <source>" has been run')
@@ -94,7 +65,7 @@ def given_fixture_function(m, params):
     import sys as sys_mod
     sys_mod.path.insert(0, os.path.join(_REPO_ROOT, "src"))
     from crap4py.complexity import cyclomatic_complexity
-    with open(ctx.fixture_py) as f:
+    with open(ctx.source_path) as f:
         source = f.read()
     results = {r.name: r.cc for r in cyclomatic_complexity(source)}
     assert func_name in results, f"Function '{func_name}' not in fixture; got {list(results)}"
@@ -131,7 +102,7 @@ def given_fixture_boolean_heavy(m, params):
     import sys as sys_mod
     sys_mod.path.insert(0, os.path.join(_REPO_ROOT, "src"))
     from crap4py.complexity import cyclomatic_complexity
-    with open(ctx.fixture_py) as f:
+    with open(ctx.source_path) as f:
         source = f.read()
     results = {r.name: r.cc for r in cyclomatic_complexity(source)}
     assert "boolean_heavy" in results, f"'boolean_heavy' not in fixture; got {list(results)}"
@@ -143,7 +114,7 @@ def given_expected_cc_radon(m, params):
     import sys as sys_mod
     sys_mod.path.insert(0, os.path.join(_REPO_ROOT, "src"))
     from crap4py.complexity import cyclomatic_complexity
-    with open(ctx.fixture_py) as f:
+    with open(ctx.source_path) as f:
         source = f.read()
     results = {r.name: r.cc for r in cyclomatic_complexity(source)}
     actual = results.get("boolean_heavy")
@@ -157,7 +128,7 @@ def given_fixture_uses_with(m, params):
     import sys as sys_mod
     sys_mod.path.insert(0, os.path.join(_REPO_ROOT, "src"))
     from crap4py.complexity import cyclomatic_complexity
-    with open(ctx.fixture_py) as f:
+    with open(ctx.source_path) as f:
         source = f.read()
     results = {r.name: r.cc for r in cyclomatic_complexity(source)}
     assert "uses_with" in results, f"'uses_with' not in fixture; got {list(results)}"
@@ -173,7 +144,7 @@ def given_fixture_nested(m, params):
     import sys as sys_mod
     sys_mod.path.insert(0, os.path.join(_REPO_ROOT, "src"))
     from crap4py.complexity import cyclomatic_complexity
-    with open(ctx.fixture_py) as f:
+    with open(ctx.source_path) as f:
         source = f.read()
     results = {r.name: r.cc for r in cyclomatic_complexity(source)}
     assert outer in results, f"'{outer}' not in fixture; got {list(results)}"
@@ -189,7 +160,7 @@ def given_outer_inner_expected(m, params):
     import sys as sys_mod
     sys_mod.path.insert(0, os.path.join(_REPO_ROOT, "src"))
     from crap4py.complexity import cyclomatic_complexity
-    with open(ctx.fixture_py) as f:
+    with open(ctx.source_path) as f:
         source = f.read()
     results = {r.name: r.cc for r in cyclomatic_complexity(source)}
     assert results.get(outer) == outer_cc, (
