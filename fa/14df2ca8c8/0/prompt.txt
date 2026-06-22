@@ -1,0 +1,43 @@
+What about incremental config?
+
+---
+
+What about incremental config for mutations?
+
+---
+
+ok, but must be clear that we must use the incremental/cached results, not full check each usge
+
+---
+
+be direct, do not explain, like all the prompts here. How does this cache works? make a web reseach to corroborate wihtin a subtask
+
+---
+
+<task-notification>
+<task-id>a7514bd348f167609</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-gabadi-workspace-addi-crap4py/e9ed0d5e-8075-4b83-b9e6-ba9945fbadb3/tasks/a7514bd348f167609.output</output-file>
+<status>completed</status>
+<summary>Agent "Research mutmut cache mechanism" came to rest</summary>
+<note>A task-notification fires each time this agent comes to rest with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>**Task: Research mutmut incremental/cache mechanism**
+
+**Storage**: `mutants/` directory (mutmut 3.x). Older versions used a SQLite file (`.mutmut-cache`).
+
+**How resume works**: `mutmut run` automatically skips already-tested mutants. Re-runs only mutants in functions whose source code changed since last run.
+
+**How to reset**: Delete `mutants/` — that's the only reset mechanism. There is **no `--rerun-all` flag** in mutmut; that flag doesn't exist. To selectively rerun survivors: `for ID in $(mutmut result-ids survived); do mutmut run $ID; done`.
+
+**Implication for local-engineering.prompt**: The line "never pass `--rerun-all`" references a nonexistent flag. The real guard is "never delete `mutants/` between agent runs."
+
+Sources:
+- [mutmut documentation](https://mutmut.readthedocs.io/)
+- [GitHub - boxed/mutmut](https://github.com/boxed/mutmut)
+- [HISTORY.rst](https://github.com/boxed/mutmut/blob/main/HISTORY.rst)</result>
+<usage><subagent_tokens>43260</subagent_tokens><tool_uses>3</tool_uses><duration_ms>38639</duration_ms></usage>
+</task-notification>
+
+---
+
+You ae still explaiing what and why does, keep focused

@@ -1,0 +1,125 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "fa14df2ca8c8",
+  "session_id": "e9ed0d5e-8075-4b83-b9e6-ba9945fbadb3",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-22T03:19:13.909595Z",
+  "branch": "main",
+  "checkpoints_count": 6,
+  "files_touched": [
+    ".gitignore",
+    "swarmforge/constitution/articles/local-engineering.prompt"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "80b05739a57b",
+  "token_usage": {
+    "input_tokens": 317,
+    "cache_creation_tokens": 28798,
+    "cache_read_tokens": 1380522,
+    "output_tokens": 12552,
+    "api_call_count": 37
+  },
+  "session_metrics": {
+    "turn_count": 6
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-22T03:19:13.893679Z",
+    "agent_lines": 1,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 1,
+    "total_committed": 1,
+    "total_lines_changed": 2,
+    "agent_percentage": 50,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 4078,
+      "user_lines_removed": 1,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/skills/agent-retro/SKILL.md": 183,
+        ".claude/skills/agent-retro/scripts/extract.py": 630,
+        ".claude/skills/domain-modeling/ADR-FORMAT.md": 47,
+        ".claude/skills/domain-modeling/CONTEXT-FORMAT.md": 60,
+        ".claude/skills/domain-modeling/SKILL.md": 74,
+        ".claude/skills/explain/SKILL.md": 34,
+        ".claude/skills/grill-with-docs/SKILL.md": 7,
+        ".claude/skills/grilling/SKILL.md": 10,
+        ".claude/skills/recall/SKILL.md": 123,
+        ".claude/skills/replay/SKILL.md": 141,
+        ".claude/skills/review/SKILL.md": 220,
+        ".claude/skills/review/references/review-rules.md": 87,
+        ".claude/skills/search/SKILL.md": 70,
+        ".claude/skills/session-crosslink/SKILL.md": 141,
+        ".claude/skills/session-handoff/SKILL.md": 137,
+        ".claude/skills/session-to-skill/SKILL.md": 210,
+        ".claude/skills/setup-swarm/SKILL.md": 127,
+        ".claude/skills/teach/SKILL.md": 130,
+        ".claude/skills/using-entire/SKILL.md": 149,
+        ".claude/skills/what-happened/SKILL.md": 333,
+        ".codex/agents/entire-search.toml": 23,
+        ".codex/config.toml": 3,
+        ".codex/hooks.json": 52,
+        ".gitignore": 2,
+        "swarmforge/constitution/articles/engineering.prompt": 43,
+        "swarmforge/constitution/articles/handoffs.prompt": 77,
+        "swarmforge/constitution/articles/local-engineering.prompt": 4,
+        "swarmforge/constitution/articles/workflow.prompt": 21,
+        "swarmforge/skills/agent-retro/SKILL.md": 183,
+        "swarmforge/skills/agent-retro/scripts/extract.py": 630,
+        "swarmforge/skills/setup-swarm/SKILL.md": 127
+      },
+      "user_removed_per_file": {
+        "swarmforge/constitution/articles/local-engineering.prompt": 1
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4078,
+      "agent_lines_removed": 1
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4078,
+      "agent_lines_removed": 1
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4078,
+      "agent_lines_removed": 1
+    },
+    {
+      "checkpoint_number": 5,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4078,
+      "agent_lines_removed": 1
+    },
+    {
+      "checkpoint_number": 6,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4080,
+      "agent_lines_removed": 1
+    },
+    {
+      "checkpoint_number": 7,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 4080,
+      "agent_lines_removed": 1
+    }
+  ]
+}
