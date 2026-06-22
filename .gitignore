@@ -9,3 +9,15 @@ tmp/
 .claude/skills/swarm-persona/
 mutants/
 .mutmut-cache
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+.coverage
+coverage.lcov
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+acceptance/parsed/
+acceptance/generated/
