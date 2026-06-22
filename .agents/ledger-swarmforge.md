@@ -48,3 +48,27 @@ Status ∈ pending|applied|stale
 2026-06-22 | 2833ecee | QA | convention-gap | swarmforge | pending | Always use git rev-parse --short=10 HEAD for handoff draft commit field (QA confirmation of same rule)
 2026-06-22 | 2833ecee | QA | convention-gap | swarmforge | pending | CRAP invocation post-C4 must be uv run python -m crap4py, not rtk python -m crap4py — update local-engineering.prompt CRAP section
 2026-06-22 | 07f1de1c | integrator | convention-gap | swarmforge | pending | After post-merge fetch, always use git rev-parse --short=10 <ref> explicitly — never read hash from git log --oneline output (truncates to 7)
+
+## 2026-06-22 — knowledge/c3-coverage-spec run
+
+2026-06-22 | 3a08e3a5 | specifier | tool-error | swarmforge | pending | git reset --hard startup blocked by classifier SECOND time — backlog item 2026-06-22 specifier,integrator tool-error; curator should action: reword role startup to git merge --ff-only or pre-authorize
+2026-06-22 | 3a08e3a5 | specifier | tool-error | swarmforge | pending | agent-retro-worktree-fallback skill handled entire session current stale result cleanly (confirmation; no change needed)
+2026-06-22 | 3a08e3a5 | specifier | convention-gap | swarmforge | pending | Specifier 8-phase workflow ran clean end-to-end — healthy pattern, no change needed
+2026-06-22 | e8692053 | cleaner | tool-error | swarmforge | pending | mutmut has no scan/count mode — update local-engineering.prompt: use mutants/mutmut-stats.json key count or uv run mutmut results; estimate from AST node count if no manifest yet
+2026-06-22 | e8692053 | cleaner | convention-gap | swarmforge | pending | CRAP-first analysis workflow (run CRAP → identify violators → plan extractions → implement → verify) confirmed efficient
+2026-06-22 | e8692053 | cleaner | convention-gap | swarmforge | pending | Autonomous mode worked correctly for cleaner role — no change needed
+2026-06-22 | 38db4a34 | hardender | convention-gap | swarmforge | pending | Equivalent-mutant triage methodology (empirical test + execution trace + on_sf reset checklist) worked well
+2026-06-22 | 38db4a34 | hardender | tool-error | swarmforge | pending | Investigate: mutmut targeted re-run shows 0 files mutated when test coverage intersection empty — consider always doing full re-run after writing kill tests
+2026-06-22 | 927abd29 | architect | convention-gap | swarmforge | pending | Analyze ALL mutant survivors as batch before any targeted reruns — targeted reruns reset incremental cache and force full re-runs anyway
+2026-06-22 | 927abd29 | architect | tool-error | swarmforge | pending | Investigate: features/*.feature manifest header updated by each acceptance run (timestamps/paths) — spurious unstaged changes; consider gitignoring metadata line or .gitattributes diff filter
+2026-06-22 | e41b3e44 | QA | convention-gap | swarmforge | pending | When preparing git_handoff draft, run git rev-parse --short=10 HEAD explicitly — do not copy from git log --oneline (7-char, fails validator)
+2026-06-22 | e41b3e44 | QA | convention-gap | swarmforge | pending | Mutant equivalence spot-check pattern: sample across modules, classify timeout mutants separately (QA confirmation of healthy methodology)
+2026-06-22 | e41b3e44 | QA | convention-gap | swarmforge | pending | Observation-harness skip reasoning confirmed correct when no harness dir exists and CLI is user-facing surface
+2026-06-22 | 68d171c9 | coder | convention-gap | swarmforge | pending | Use m.group(N) not params.get(key) or m.group(N) in acceptance step handlers — params dict carries all example-row values and silently overrides step-text literals
+2026-06-22 | 68d171c9 | coder | convention-gap | swarmforge | pending | DRY pre-commit gate caught real duplication — pattern confirmed working
+2026-06-22 | 68d171c9 | coder | convention-gap | swarmforge | pending | TDD loop (tests first → implementation → all green first pass) was clean and efficient
+2026-06-22 | 45b70da6 | curator | tool-error | swarmforge | pending | session-to-skill stalls on confirmation prompts in autonomous curator runs — write SKILL.md directly from ledger evidence (now documented in curator role file)
+2026-06-22 | 45b70da6 | curator | tool-error | swarmforge | pending | Investigate: extract.py conversation_arc content null and token_budget empty — 4th consecutive curator occurrence; root cause unknown; may be JSONL format difference in newer Claude Code
+2026-06-22 | 6d7df830 | integrator | convention-gap | swarmforge | pending | Integrator handoff: use git rev-parse --short=10 origin/main (not HEAD) for post-merge trunk commit — HEAD stays on swarmforge-integrator branch after merge
+2026-06-22 | 6d7df830 | integrator | convention-gap | swarmforge | pending | swarm_handoff.sh validation catching bad commit abbrev is effective — no change needed
+2026-06-22 | 6d7df830 | integrator | convention-gap | swarmforge | pending | No-CI skip logic (retry once, then skip) worked correctly with direct retry rather than sleep chain

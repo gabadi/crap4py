@@ -47,3 +47,24 @@ Format: `<date> | <session-id> | <role> | <failure-class> | <verdict> | <one-lin
 2026-06-22 | 2833ecee | QA | convention-gap | rejected→swarmforge-only | rtk python -m crap4py fails — CRAP invocation is uv run python -m crap4py (swarmforge/local-engineering)
 2026-06-22 | f3652fc0 | specifier | tool-error | rejected→swarmforge-only | completion-notice retro: entire session current stale (existing backlog); dot-encoding fix applied to agent-retro-worktree-fallback skill
 2026-06-22 | 07f1de1c | integrator | convention-gap | rejected→swarmforge-only | integrator merge retro: all actions swarmforge-scoped; no project promotions
+
+## 2026-06-22 — knowledge/c3-coverage-spec run
+
+2026-06-22 | 3a08e3a5 | specifier | tool-error | rejected→first-occurrence | agent-retro SKILL.md Step 1 fallback: lead with ls ~/.claude/projects/ | grep <last-segment> (update to main skill, not fallback patch)
+2026-06-22 | 3a08e3a5 | specifier | tool-error | rejected→swarmforge-only | git reset --hard startup blocked by classifier (2nd occurrence of swarmforge backlog item — no project promotion)
+2026-06-22 | e8692053 | cleaner | convention-gap | promoted→.agents/roles/cleaner.md | BoolOp/IfExp each add branch points in Python CC — verify with crap4py before committing
+2026-06-22 | e8692053 | cleaner | tool-error | rejected→swarmforge-only | mutmut scan/count mode does not exist — swarmforge local-engineering update
+2026-06-22 | e8692053 | cleaner | convention-gap | rejected→first-occurrence | real filesystem (tmp_path) required when testable module wraps a filesystem walker — skill update candidate
+2026-06-22 | 38db4a34 | hardender | convention-gap | rejected→inferable | canonical SwarmForge role names inferable from .swarmforge/roles.tsv — no promotion needed
+2026-06-22 | 38db4a34 | hardender | tool-error | rejected→swarmforge-only | mutmut targeted re-run shows 0 files mutated — investigate swarmforge item
+2026-06-22 | 927abd29 | architect | convention-gap | rejected→swarmforge-only | analyze mutant survivors as batch before targeted reruns — swarmforge/local-engineering update
+2026-06-22 | 927abd29 | architect | convention-gap | rejected→inferable | architectural boundary enforcement (IO/_report/AST) inferable from test_arch.py — no promotion needed
+2026-06-22 | 927abd29 | architect | tool-error | rejected→swarmforge-only | features/*.feature manifest header updated each run (spurious unstaged) — swarmforge investigation
+2026-06-22 | e41b3e44 | QA | convention-gap | rejected→swarmforge-only | git rev-parse --short=10 HEAD for handoff draft — swarmforge rule (existing pattern)
+2026-06-22 | e41b3e44 | QA | convention-gap | rejected→inferable | pre-existing Gherkin complexity survivors (C1) inferable from git history and C1 feature file
+2026-06-22 | 68d171c9 | coder | convention-gap | promoted→AGENTS.md | acceptance step handlers must use m.group(N) not params.get(key) or m.group(N) — params dict silently overrides step-text literals
+2026-06-22 | 68d171c9 | coder | convention-gap | rejected→inferable | normalising parser test design (before vs after normalisation differ at data level) — general test design, inferable
+2026-06-22 | 68d171c9 | coder | convention-gap | rejected→swarmforge-only | params.get(x) or m.group(1) audit in existing step handlers — project-level cleanup task
+2026-06-22 | 45b70da6 | curator | tool-error | promoted→.agents/roles/curator.md | session-to-skill is interactive; write SKILL.md directly from ledger evidence in autonomous curator runs
+2026-06-22 | 45b70da6 | curator | tool-error | rejected→swarmforge-only | extract.py conversation_arc null / token_budget empty (4th curator occurrence) — ongoing investigation
+2026-06-22 | 6d7df830 | integrator | convention-gap | rejected→swarmforge-only | integrator merge retro: all actions swarmforge-scoped; no project promotions
