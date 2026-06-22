@@ -1,0 +1,5 @@
+/mattpocock-skills:setup-matt-pocock-skills
+
+---
+
+approve, persist, commit and push

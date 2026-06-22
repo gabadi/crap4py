@@ -1,0 +1,75 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "2ea0fe7c4b87",
+  "session_id": "07f1de1c-82a3-4dd2-8508-85b99d956e66",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-22T03:51:24.49523Z",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "docs/agents/issue-tracker.md",
+    "docs/agents/triage-labels.md",
+    "docs/agents/domain.md"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "14058de5161c",
+  "token_usage": {
+    "input_tokens": 115,
+    "cache_creation_tokens": 18400,
+    "cache_read_tokens": 429227,
+    "output_tokens": 5671,
+    "api_call_count": 14
+  },
+  "skill_events_version": 1,
+  "skill_events": [
+    {
+      "id": "prompt-skill-claude-code-mattpocock-skills:setup-matt-pocock-skills-2026-06-22T03:48:07.735587Z",
+      "event_type": "prompt_invocation",
+      "skill": {
+        "name": "mattpocock-skills:setup-matt-pocock-skills"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "prompt_slash_command",
+        "confidence": "explicit"
+      },
+      "turn_id": "b80a90ddd690",
+      "timestamp": "2026-06-22T03:48:07.735587Z",
+      "native": {
+        "command": "/mattpocock-skills:setup-matt-pocock-skills"
+      },
+      "collapse": {
+        "target": "user_message",
+        "label": "/mattpocock-skills:setup-matt-pocock-skills",
+        "default_collapsed": true
+      }
+    }
+  ],
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-22T03:51:24.48362Z",
+    "agent_lines": 92,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 92,
+    "total_lines_changed": 92,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}
