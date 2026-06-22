@@ -89,3 +89,8 @@ Format: `<date> | <session-id> | <role> | <failure-class> | <verdict> | <one-lin
 2026-06-22 | aee3d2af | curator | tool-error | rejected→swarmforge-only | extract.py null token_budget (5th occurrence) — ongoing swarmforge investigation
 2026-06-22 | c531c23f | architect | tool-error | promoted→.agents/roles/architect.md | mutmut cache does not re-test mutants when new tests added; use mutmut run <name> or full re-run to recheck
 2026-06-22 | c531c23f | architect | convention-gap | rejected→swarmforge-only | commit hash 10-char reminder for architect — swarmforge rule (recurring)
+
+## 2026-06-22 — knowledge/c4-crap-report-command run (late retros)
+
+2026-06-22 | debd2267 | integrator | convention-gap | rejected→swarmforge-only | integrator c4 retro: all actions swarmforge-scoped; no project promotions
+2026-06-22 | f2c50b01 | specifier | convention-gap | rejected→swarmforge-only | specifier merge-process-verify retro: all actions swarmforge-scoped; no project promotions

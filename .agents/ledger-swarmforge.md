@@ -83,3 +83,9 @@ Status ∈ pending|applied|stale
 2026-06-22 | f2c50b01 | specifier | tool-error | swarmforge | pending | git reset --hard startup blocked by classifier THIRD time — backlog item escalation; pre-authorize or reword to git merge --ff-only
 2026-06-22 | aee3d2af | curator | tool-error | swarmforge | pending | extract.py returns null cost/turns/tokens (5th consecutive curator occurrence) — compare JSONL format between sessions with/without data
 2026-06-22 | c531c23f | architect | convention-gap | swarmforge | pending | Always use git rev-parse --short=10 HEAD for handoff draft commit field (architect confirmation of recurring rule)
+
+## 2026-06-22 — late retros (integrator + specifier)
+
+2026-06-22 | debd2267 | integrator | convention-gap | swarmforge | pending | In worktree-based setup, step 4 checkout back to assigned branch is a no-op — skip it or expect already-used-by-worktree error and continue
+2026-06-22 | debd2267 | integrator | convention-gap | swarmforge | pending | For 30s CI retry, use run_in_background:true or Monitor pattern — harness blocks chained sleep
+2026-06-22 | f2c50b01 | specifier | convention-gap | swarmforge | pending | CONTRACT prose can drift from implementation after mutation-manifest guardrail blocks prose-only fix; decide reconciliation path: (a) fix before handoff, (b) tool re-stamp on comment-edit, or (c) accept drift since scenarios are the contract
