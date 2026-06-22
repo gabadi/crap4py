@@ -1,0 +1,53 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "da9ef1ec34b2",
+  "session_id": "e1bc4d7c-9832-42da-b388-d22c27cc5200",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-22T03:30:01.37323Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "swarmforge/swarmforge.conf"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "85da64706e4e",
+  "token_usage": {
+    "input_tokens": 60,
+    "cache_creation_tokens": 10939,
+    "cache_read_tokens": 182001,
+    "output_tokens": 1494,
+    "api_call_count": 7
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-22T03:30:01.360322Z",
+    "agent_lines": 5,
+    "agent_removed": 11,
+    "human_added": 0,
+    "human_modified": 5,
+    "human_removed": 0,
+    "total_committed": 10,
+    "total_lines_changed": 21,
+    "agent_percentage": 76.19047619047619,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 10,
+      "agent_lines_removed": 11
+    }
+  ]
+}
