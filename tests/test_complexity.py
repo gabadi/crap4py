@@ -239,3 +239,24 @@ def test_mixed_constructs(ifs, loops, booleans, asserts, expected):
     body = "\n    ".join(lines) if lines else "pass"
     source = f"def f():\n    {body}\n"
     assert cc(source) == expected
+
+
+# --- mutant-killing tests ---
+
+def test_single_if_gives_exactly_cc_2_not_3():
+    # mutmut_1: _structural_decision_points returns 2 instead of 1 for _SIMPLE_BRANCH_NODES
+    # A function with one `if` has CC = 1 (base) + 1 (if) = 2, not 3
+    source = "def f(x):\n    if x:\n        pass\n"
+    assert cc(source) == 2
+
+
+def test_single_assert_gives_exactly_cc_2_not_3():
+    # assert is in _SIMPLE_BRANCH_NODES; one assert → CC 2 not 3
+    source = "def f(x):\n    assert x\n"
+    assert cc(source) == 2
+
+
+def test_exception_handler_gives_exactly_cc_2_not_3():
+    # except handler is in _SIMPLE_BRANCH_NODES; one except → CC 2 not 3
+    source = "def f():\n    try:\n        pass\n    except ValueError:\n        pass\n"
+    assert cc(source) == 2

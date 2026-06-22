@@ -1,0 +1,9 @@
+TN:
+SF:acceptance/fixtures/c3_fixture/covered.py
+BRDA:8,0,jump to line 10,1
+BRDA:8,0,jump to else,1
+BRDA:10,0,jump to line 12,0
+BRDA:10,0,jump to else,1
+BRDA:17,0,jump to line 18,1
+BRDA:17,0,jump to line 19,1
+end_of_record

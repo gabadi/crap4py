@@ -52,10 +52,20 @@ specs, test names, and code.
   the `def` line, not the decorator. C3 intersects this range with LCOV `BRDA`
   records to resolve coverage.
 
-- **Coverage** — the fraction of a function's branches exercised by tests, read
-  from LCOV `BRDA` records within the function's line range. See
-  [ADR 0002](docs/adr/0002-coverage-is-branch-based.md). (Detailed in C3.)
+- **Coverage** — the fraction (`[0, 1]`) of a function's branches exercised by
+  tests: `(# in-range BRDA with taken ≥ 1) / (# in-range BRDA)`, over the `BRDA`
+  records that fall in the function's line range. A `taken` of `-` or `0` is
+  uncovered; both still count toward the denominator. See
+  [ADR 0002](docs/adr/0002-coverage-is-branch-based.md).
 
-- **N/A coverage** — coverage that is genuinely indeterminate (e.g. the source
-  file is absent from the LCOV). A zero-branch function is *not* N/A; it is
-  trivially 100% covered.
+- **N/A coverage** — coverage that is genuinely indeterminate: the function's
+  source file has no matching `SF` record in the LCOV. A zero-branch function
+  (no in-range `BRDA`) is *not* N/A; it is trivially 100% covered, even when its
+  file is present in the LCOV.
+
+- **LCOV / `BRDA`** — the coverage input format (produced by `coverage.py
+  --cov-branch`). A `BRDA:<line>,<block>,<branch>,<taken>` record is one branch
+  edge. crap4py reads only `BRDA` (and `SF` to locate the file); coverage.py
+  quirks are tolerated: the `branch` id is opaque *text* (not an integer),
+  `block` is always `0`, `taken` is `-`/`0`/count, and `line=0` records (a
+  coverage.py bug) are ignored. There is **no** `DA` line-coverage fallback.
