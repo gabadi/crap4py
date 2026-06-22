@@ -1,85 +1,65 @@
-"""Pure report-building logic extracted from the CLI entrypoint.
+"""Report-building logic: discover functions → score → CRAP rows.
 
-This module owns the data pipeline: discover functions → score complexity →
-resolve coverage → format rows. It is fully testable without filesystem
+This module owns the data pipeline. It is fully testable without filesystem
 side-effects beyond what the injected IO callables do.
 """
 from __future__ import annotations
 
 from typing import Callable
 
-from crap4py.discovery import discover_functions
+from crap4py.discovery import discover_functions, FunctionEntry
 from crap4py.complexity import cyclomatic_complexity
 from crap4py.coverage import parse_lcov, resolve_coverage, NA, LcovData
+from crap4py._crap import ReportRow, sort_rows
 
 
-def build_rows(
+def _default_open(p: str) -> str:
+    with open(p) as f:
+        return f.read()
+
+
+def _filter_by_fragments(
+    entries: list[FunctionEntry], fragments: list[str]
+) -> list[FunctionEntry]:
+    return [e for e in entries if any(frag in e.module_label for frag in fragments)]
+
+
+def _score_entry(
+    entry: FunctionEntry,
+    lcov_data: LcovData,
+    open_fn: Callable[[str], str],
+) -> ReportRow | None:
+    try:
+        source_text = open_fn(entry.module_label)
+    except OSError:
+        return None
+    cc_results = {r.name: r.cc for r in cyclomatic_complexity(source_text)}
+    bare_name = entry.qualified_name.rsplit(".", 1)[-1]
+    cc = cc_results.get(bare_name, 1)
+    cov = resolve_coverage(entry.module_label, entry.line_range, lcov_data)
+    return ReportRow(entry.qualified_name, entry.module_label, cc, cov)
+
+
+def build_report(
     lcov_path: str,
     paths: list[str],
     *,
+    fragments: list[str] | None = None,
     open_fn: Callable[[str], str] | None = None,
-) -> list[tuple[str, str, int, str]]:
-    """Return one row per function: (qualified_name, module_label, cc, cov_str).
+) -> list[ReportRow]:
+    """Return sorted ReportRow list, one per discovered function.
 
-    open_fn reads a file path and returns its text. Defaults to the real open().
-    Returns an empty list when no functions are found.
+    fragments: optional path-fragment substring filters (crap4go filterSources).
+    open_fn: injectable file reader for testing.
     """
     if open_fn is None:
-        def open_fn(p: str) -> str:
-            with open(p) as f:
-                return f.read()
+        open_fn = _default_open
 
-    lcov_text = open_fn(lcov_path)
-    lcov_data: LcovData = parse_lcov(lcov_text)
+    lcov_data: LcovData = parse_lcov(open_fn(lcov_path))
     entries = discover_functions(paths)
 
-    rows: list[tuple[str, str, int, str]] = []
-    for entry in entries:
-        try:
-            source_text = open_fn(entry.module_label)
-        except OSError:
-            continue
-        cc_results = {r.name: r.cc for r in cyclomatic_complexity(source_text)}
-        bare_name = entry.qualified_name.rsplit(".", 1)[-1]
-        cc = cc_results.get(bare_name, 1)
-        cov = resolve_coverage(entry.module_label, entry.line_range, lcov_data)
-        cov_str = _format_coverage(cov)
-        rows.append((entry.qualified_name, entry.module_label, cc, cov_str))
+    if fragments:
+        entries = _filter_by_fragments(entries, fragments)
 
-    return rows
-
-
-def _format_coverage(cov: float | object) -> str:
-    if cov is NA:
-        return "N/A"
-    f = float(cov)  # type: ignore[arg-type]
-    if f == 0.0:
-        return "0.0"
-    if f == 1.0:
-        return "1.0"
-    return f"{f:.4g}"
-
-
-_HEADERS = ("function", "module", "cc", "coverage")
-
-
-def _col_widths(rows: list[tuple[str, str, int, str]]) -> list[int]:
-    return [
-        max(len(h), max(len(str(r[i])) for r in rows))
-        for i, h in enumerate(_HEADERS)
-    ]
-
-
-def format_table(rows: list[tuple[str, str, int, str]]) -> str:
-    """Return a formatted fixed-width table string (no trailing newline on last line)."""
-    if not rows:
-        return "no functions found"
-    col_w = _col_widths(rows)
-    fmt = "  ".join(f"{{:<{w}}}" for w in col_w)
-    lines = [
-        fmt.format(*_HEADERS),
-        "  ".join("-" * w for w in col_w),
-    ]
-    for row in rows:
-        lines.append(fmt.format(*row))
-    return "\n".join(lines)
+    rows = [_score_entry(e, lcov_data, open_fn) for e in entries]
+    return sort_rows([r for r in rows if r is not None])

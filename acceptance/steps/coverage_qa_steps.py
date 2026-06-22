@@ -23,12 +23,37 @@ def _run_cli() -> str:
 
 
 def _extract_coverage(report: str, func_name: str) -> str | None:
-    """Find the row for func_name and return its coverage column value."""
-    for line in report.splitlines():
+    """Find the row for func_name and return its coverage as a fraction string.
+
+    The Cov% column shows values like '75.0%' or 'N/A'. This helper converts
+    percentage values back to fractions ('75.0%' → '0.75') so that C3 QA
+    assertions comparing against raw fractions ('0.75', '1.0') still hold.
+    """
+    lines = report.splitlines()
+    header_line = next((l for l in lines if "Cov%" in l), None)
+    if header_line is None:
+        # Old 4-column format: last token is the raw fraction
+        for line in lines:
+            if func_name in line:
+                parts = line.split()
+                return parts[-1] if parts else None
+        return None
+    cov_col = header_line.index("Cov%")
+    for line in lines:
         if func_name in line:
-            parts = line.split()
-            if parts:
-                return parts[-1]
+            segment = line[cov_col:]
+            tokens = segment.split()
+            if not tokens:
+                return None
+            raw = tokens[0]
+            if raw == "N/A":
+                return "N/A"
+            if raw.endswith("%"):
+                try:
+                    return str(float(raw[:-1]) / 100.0)
+                except ValueError:
+                    return raw
+            return raw
     return None
 
 
