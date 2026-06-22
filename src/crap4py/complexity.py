@@ -15,38 +15,38 @@ class FunctionCC:
 def cyclomatic_complexity(source: str) -> list[FunctionCC]:
     """Return one FunctionCC per def/async def in source, in definition order."""
     tree = ast.parse(source)
+    return _collect_from_scope(tree)
+
+
+# --- Traversal layer ---
+
+def _collect_from_scope(scope: ast.AST) -> list[FunctionCC]:
+    """Walk direct children of a scope, collecting FunctionCC entries."""
     results: list[FunctionCC] = []
-    _visit_scope(tree, results)
+    for child in ast.iter_child_nodes(scope):
+        if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            results.extend(_score_function(child))
+        elif isinstance(child, ast.ClassDef):
+            results.extend(_collect_from_scope(child))
     return results
 
 
-def _visit_scope(scope: ast.AST, results: list[FunctionCC]) -> None:
-    """Visit direct children looking for function defs and class bodies."""
-    for child in ast.iter_child_nodes(scope):
-        if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            cc = 1 + _count_function_body(child, results)
-            results.append(FunctionCC(name=child.name, cc=cc))
-        elif isinstance(child, ast.ClassDef):
-            _visit_scope(child, results)
-
-
-def _count_function_body(func_node: ast.AST, results: list[FunctionCC]) -> int:
-    """Count decision points in func_node's body, stopping at nested def boundaries.
-
-    Nested defs are recursively processed and appended to results.
-    """
-    total = 0
+def _score_function(func_node: ast.AST) -> list[FunctionCC]:
+    """Score a function node: returns its own FunctionCC followed by nested ones."""
+    own_points = 0
+    nested: list[FunctionCC] = []
     stack: list[ast.AST] = list(ast.iter_child_nodes(func_node))
     while stack:
         node = stack.pop()
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            cc = 1 + _count_function_body(node, results)
-            results.append(FunctionCC(name=node.name, cc=cc))
+            nested.extend(_score_function(node))
             continue
-        total += _decision_points(node)
+        own_points += _decision_points(node)
         stack.extend(ast.iter_child_nodes(node))
-    return total
+    return [FunctionCC(name=func_node.name, cc=1 + own_points)] + nested
 
+
+# --- Decision-point rules (ADR 0001) ---
 
 def _decision_points(node: ast.AST) -> int:
     """Return decision points contributed by a single AST node."""
