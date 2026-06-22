@@ -13,13 +13,17 @@ mkdir -p "$PARSED_DIR" "$GENERATED_DIR"
 declare -A STEPS_MAP
 STEPS_MAP[complexity]="complexity_steps"
 
+# QA feature → steps module mapping (run separately; no Gherkin mutation)
+declare -A QA_STEPS_MAP
+QA_STEPS_MAP[complexity_qa]="complexity_qa_steps"
+
 FAILED=0
 PASSED=0
 
 for feature_file in "$REPO_ROOT"/features/*.feature; do
     stem="$(basename "$feature_file" .feature)"
 
-    # Skip QA feature files (owned by QA role)
+    # QA feature files are run in the QA section below
     if [[ "$stem" == *_qa ]]; then
         continue
     fi
@@ -93,9 +97,49 @@ for feature_file in "$REPO_ROOT"/features/*.feature; do
 done
 
 if [[ $MUTATION_FAILED -gt 0 ]]; then
-    echo "=== Gherkin mutation FAILED for $MUTATION_FAILED feature(s) ==="
+    echo "=== Gherkin mutation: $MUTATION_FAILED feature(s) have surviving mutants (spec gaps — route to specifier) ==="
+fi
+
+echo "=== Gherkin mutation done ==="
+
+# --- QA end-to-end suite ---
+echo ""
+echo "=== QA end-to-end suite ==="
+
+QA_FAILED=0
+QA_PASSED=0
+
+for feature_file in "$REPO_ROOT"/features/*_qa.feature; do
+    [[ -f "$feature_file" ]] || continue
+    stem="$(basename "$feature_file" .feature)"
+    steps_mod="${QA_STEPS_MAP[$stem]:-}"
+    if [[ -z "$steps_mod" ]]; then
+        echo "SKIP QA: no steps module for $stem"
+        continue
+    fi
+
+    echo "=== QA: $stem ==="
+
+    parsed="$PARSED_DIR/${stem}_parsed.json"
+    gherkin-parser "$feature_file" "$parsed"
+
+    rel_feature="features/${stem}.feature"
+    uv run python "$REPO_ROOT/acceptance/generate_acceptance.py" \
+        "$parsed" "$steps_mod" "$GENERATED_DIR" "$rel_feature"
+
+    generated="$GENERATED_DIR/${stem}_acceptance.py"
+    if uv run python "$generated"; then
+        QA_PASSED=$((QA_PASSED + 1))
+    else
+        QA_FAILED=$((QA_FAILED + 1))
+    fi
+done
+
+echo ""
+echo "=== QA suite: $QA_PASSED feature(s) passed, $QA_FAILED failed ==="
+
+if [[ $QA_FAILED -gt 0 ]]; then
     exit 1
 fi
 
-echo "=== Gherkin mutation passed ==="
 exit 0

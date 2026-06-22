@@ -1,10 +1,10 @@
 """Step handlers for features/complexity.feature."""
-import re
 import sys
 import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 from crap4py.complexity import cyclomatic_complexity
+from acceptance.steps.step_lib import make_registry
 
 
 class Context:
@@ -15,14 +15,7 @@ class Context:
 
 ctx = Context()
 
-STEP_HANDLERS = {}
-
-
-def step(pattern):
-    def decorator(fn):
-        STEP_HANDLERS[pattern] = fn
-        return fn
-    return decorator
+STEP_HANDLERS, step, run_step = make_registry()
 
 
 def _first_cc() -> int:
@@ -215,10 +208,3 @@ def then_inner_cc_is(m, params):
     assert actual == expected, f"Expected inner CC {expected}, got {actual}"
 
 
-def run_step(keyword: str, text: str, params: dict) -> None:
-    for pattern, handler in STEP_HANDLERS.items():
-        m = re.fullmatch(pattern, text)
-        if m:
-            handler(m, params)
-            return
-    raise NotImplementedError(f"No step handler for: {keyword} {text!r}")

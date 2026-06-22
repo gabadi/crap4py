@@ -44,7 +44,7 @@ def generate(parsed: dict, steps_module: str, feature_stem: str, ir_path: str) -
     test_fns: list[str] = []
     for s_idx, scenario in enumerate(scenarios):
         name = scenario["name"]
-        examples = scenario.get("examples", [{}])
+        examples = scenario.get("examples") or [{}]
         for e_idx, _ in enumerate(examples):
             fn_name = f"test_{sanitize(name)}_{e_idx}"
             lines.append(f"def {fn_name}():")
