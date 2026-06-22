@@ -5,3 +5,7 @@
 .swarmforge/
 .worktrees/
 swarmforge/scripts/
+tmp/
+.claude/skills/swarm-persona/
+mutants/
+.mutmut-cache
