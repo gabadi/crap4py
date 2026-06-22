@@ -35,3 +35,15 @@ See `.agents/roles/cleaner.md` for CC reduction pitfalls (BoolOp/IfExp branch po
 ### Curator role knowledge
 
 See `.agents/roles/curator.md` for curator-specific operational rules.
+
+### Coder role knowledge
+
+See `.agents/roles/coder.md` for step-handler column extraction, CRAP back-solve, and ctx.cli_argv rules.
+
+### Architect role knowledge
+
+See `.agents/roles/architect.md` for mutmut cache freshness rules.
+
+### gherkin-parser inline data tables
+
+`gherkin-parser` does NOT include inline `| col | val |` data tables in step IR. Any step using an inline table MUST hardcode that table in the step handler. (coder 68d171c9)

@@ -72,3 +72,14 @@ Status ∈ pending|applied|stale
 2026-06-22 | 6d7df830 | integrator | convention-gap | swarmforge | pending | Integrator handoff: use git rev-parse --short=10 origin/main (not HEAD) for post-merge trunk commit — HEAD stays on swarmforge-integrator branch after merge
 2026-06-22 | 6d7df830 | integrator | convention-gap | swarmforge | pending | swarm_handoff.sh validation catching bad commit abbrev is effective — no change needed
 2026-06-22 | 6d7df830 | integrator | convention-gap | swarmforge | pending | No-CI skip logic (retry once, then skip) worked correctly with direct retry rather than sleep chain
+
+## 2026-06-22 — knowledge/c4-crap-report-command run
+
+2026-06-22 | bd628b3f | cleaner | tool-error | swarmforge | pending | mutmut 3.x has no scan/count-only mode; use uv run mutmut run --max-children 1 to generate mutant list, then count from mutants/ tree
+2026-06-22 | bd628b3f | cleaner | tool-error | swarmforge | pending | mutmut state stale after cleaner refactor: extracted helpers are new functions not in manifest; downstream roles must re-run coverage + mutmut before reading results on C4 files
+2026-06-22 | e6bab3b8 | QA | convention-gap | swarmforge | pending | Before starting verification, run git branch -a and detect un-merged upstream pipeline branches; merge all relevant before proceeding
+2026-06-22 | e6bab3b8 | QA | convention-gap | swarmforge | pending | When testing exit codes, never pipe CLI invocation through grep — use bare invocation and check $? separately
+2026-06-22 | d8370093 | hardender | convention-gap | swarmforge | pending | After merge_and_process, re-run coverage generation before mutmut — merge invalidates all mutant state (hardender role prompt update)
+2026-06-22 | f2c50b01 | specifier | tool-error | swarmforge | pending | git reset --hard startup blocked by classifier THIRD time — backlog item escalation; pre-authorize or reword to git merge --ff-only
+2026-06-22 | aee3d2af | curator | tool-error | swarmforge | pending | extract.py returns null cost/turns/tokens (5th consecutive curator occurrence) — compare JSONL format between sessions with/without data
+2026-06-22 | c531c23f | architect | convention-gap | swarmforge | pending | Always use git rev-parse --short=10 HEAD for handoff draft commit field (architect confirmation of recurring rule)
