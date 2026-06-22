@@ -29,3 +29,8 @@ Status ∈ pending|applied|stale
 2026-06-22 | 773c8e94 | hardender | tool-error | swarmforge | pending | mutmut worker-limit flag is --max-children N, not --max-workers N; confirm with mutmut run --help before first run
 2026-06-22 | 62904c66 | QA | convention-gap | swarmforge | pending | Step handler patterns match bare step text only — keyword (Given/When/Then) is NOT included in the pattern
 2026-06-22 | 62904c66 | QA | wrong-path | swarmforge | pending | run_acceptance.sh: Gherkin mutation section should be informational (non-blocking) — QA suite runs unconditionally after acceptance tests pass
+2026-06-22 | c0e959b9 | specifier | convention-gap | swarmforge | pending | Specifier role prompt mandates manual git reset --hard on handoff but local-workflow article says ready_for_next.sh already syncs — reconcile and remove manual reset
+2026-06-22 | 633ecaab | integrator | convention-gap | swarmforge | pending | Add note: "no checks reported" is non-failure; add --json mergeability re-check before escalating to avoid classifier blocks
+2026-06-22 | 633ecaab | integrator | missing-artifact | swarmforge | pending | Add mkdir -p ./tmp as first step in handoff section of integrator role prompt
+2026-06-22 | 633ecaab | integrator | tool-error | swarmforge | pending | Investigate: gh pr merge blocked by auto-mode classifier when CI absent — determine if permission rule can pre-authorize for integrator worktree
+2026-06-22 | 633ecaab | integrator | convention-gap | swarmforge | pending | Replace sleep 30 && gh pr checks retry with run_in_background or Monitor pattern in integrator role

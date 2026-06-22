@@ -19,3 +19,5 @@ Format: `<date> | <session-id> | <role> | <failure-class> | <verdict> | <one-lin
 2026-06-22 | 6c891396 | specifier | tool-error | rejected→first-occurrence | agent-retro: Claude Code project-dir path uses double-dash for /. boundary (skill action #2)
 2026-06-22 | 62904c66 | QA | convention-gap | rejected→inferable | generator fix for non-outline Scenarios (fix is in code; acknowledgement only)
 2026-06-22 | 62904c66 | QA | missing-artifact | rejected→machine-specific | 6 Gherkin mutation survivors are known spec-coverage gaps — specifier to address in C2+ (memory-update, not project knowledge)
+2026-06-22 | c0e959b9 | specifier | convention-gap | rejected→swarmforge-only | completion-handoff retro: all actions swarmforge-scoped; no project promotions
+2026-06-22 | 633ecaab | integrator | tool-error | rejected→swarmforge-only | integrator merge retro: all actions swarmforge-scoped; no project promotions
