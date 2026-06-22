@@ -23,3 +23,15 @@ In all shell scripts in this project, use `uv run python` not bare `python`; no 
 ### Hardender role knowledge
 
 See `.agents/roles/hardender.md` for known branch-miss artifacts in `_discovery_io.py`.
+
+### Acceptance step handler capture rule
+
+In acceptance step handlers, always use `m.group(N)` (regex capture) to extract literal values from step text — never `params.get(key) or m.group(N)`. The params dict carries ALL example-row values and silently overrides step-text literals. (coder 68d171c9)
+
+### Cleaner role knowledge
+
+See `.agents/roles/cleaner.md` for CC reduction pitfalls (BoolOp/IfExp branch points in Python).
+
+### Curator role knowledge
+
+See `.agents/roles/curator.md` for curator-specific operational rules.
