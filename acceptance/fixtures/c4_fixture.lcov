@@ -1,0 +1,11 @@
+TN:
+SF:acceptance/fixtures/c4_fixture/covered.py
+BRDA:8,0,0,1
+BRDA:8,0,1,1
+BRDA:9,0,0,1
+BRDA:9,0,1,0
+BRDA:19,0,0,0
+BRDA:19,0,1,0
+BRDA:21,0,0,0
+BRDA:21,0,1,0
+end_of_record

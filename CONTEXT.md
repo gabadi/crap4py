@@ -69,3 +69,29 @@ specs, test names, and code.
   quirks are tolerated: the `branch` id is opaque *text* (not an integer),
   `block` is always `0`, `taken` is `-`/`0`/count, and `line=0` records (a
   coverage.py bug) are ignored. There is **no** `DA` line-coverage fallback.
+
+- **CRAP score** — see CRAP above: `CC² × (1 − coverage)³ + CC`. The `CRAP`
+  column of the report. When a function's coverage is **N/A** (indeterminate),
+  its CRAP score is **N/A** too — indeterminacy propagates and is never coerced
+  to zero coverage. Shown to one decimal. See
+  [ADR 0004](docs/adr/0004-crap-report-command.md).
+
+- **CRAP report** — the tool's only output: a fixed-width table titled
+  `CRAP Report`, with columns `Function | Module | CC | Cov% | CRAP`, a header
+  and separator line, then one row per discovered function. `Module` is the C2
+  module label. Empty input still prints the header block. C4 is the integration
+  surface that builds it from C1/C2/C3; it adds the score, sort, and format only.
+
+- **CRAP sort order** — report rows are ordered **worst CRAP first**
+  (descending); **N/A**-CRAP rows sort **last**; ties (equal CRAP, or two N/A
+  rows) break **stably by qualified function name, ascending**.
+
+- **`--max-crap N`** — optional CI gate. When supplied, the command exits
+  **non-zero** if **any** function's CRAP score is **strictly greater than `N`**;
+  N/A-CRAP rows never trip it. No default — absent the flag, a clean run is exit
+  0. The threshold is caller-supplied (the "crappy = 30" figure is a convention,
+  not hard-coded). The full report still prints before a breach exit.
+
+- **`--max-workers N`** — optional parallelism flag. Analyzes source files across
+  `N` workers; **performance only** — the printed report is identical to a serial
+  run. Requires a positive integer.
