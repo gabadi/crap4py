@@ -69,3 +69,6 @@ Status ∈ pending|applied|stale
 2026-06-22 | 68d171c9 | coder | convention-gap | swarmforge | pending | TDD loop (tests first → implementation → all green first pass) was clean and efficient
 2026-06-22 | 45b70da6 | curator | tool-error | swarmforge | pending | session-to-skill stalls on confirmation prompts in autonomous curator runs — write SKILL.md directly from ledger evidence (now documented in curator role file)
 2026-06-22 | 45b70da6 | curator | tool-error | swarmforge | pending | Investigate: extract.py conversation_arc content null and token_budget empty — 4th consecutive curator occurrence; root cause unknown; may be JSONL format difference in newer Claude Code
+2026-06-22 | 6d7df830 | integrator | convention-gap | swarmforge | pending | Integrator handoff: use git rev-parse --short=10 origin/main (not HEAD) for post-merge trunk commit — HEAD stays on swarmforge-integrator branch after merge
+2026-06-22 | 6d7df830 | integrator | convention-gap | swarmforge | pending | swarm_handoff.sh validation catching bad commit abbrev is effective — no change needed
+2026-06-22 | 6d7df830 | integrator | convention-gap | swarmforge | pending | No-CI skip logic (retry once, then skip) worked correctly with direct retry rather than sleep chain

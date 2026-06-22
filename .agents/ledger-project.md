@@ -67,3 +67,4 @@ Format: `<date> | <session-id> | <role> | <failure-class> | <verdict> | <one-lin
 2026-06-22 | 68d171c9 | coder | convention-gap | rejected→swarmforge-only | params.get(x) or m.group(1) audit in existing step handlers — project-level cleanup task
 2026-06-22 | 45b70da6 | curator | tool-error | promoted→.agents/roles/curator.md | session-to-skill is interactive; write SKILL.md directly from ledger evidence in autonomous curator runs
 2026-06-22 | 45b70da6 | curator | tool-error | rejected→swarmforge-only | extract.py conversation_arc null / token_budget empty (4th curator occurrence) — ongoing investigation
+2026-06-22 | 6d7df830 | integrator | convention-gap | rejected→swarmforge-only | integrator merge retro: all actions swarmforge-scoped; no project promotions
