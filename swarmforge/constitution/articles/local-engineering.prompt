@@ -5,31 +5,6 @@
 - The architect, hardender, and QA must run property tests before handoff when the project has them and fix any failures.
 
 ## Code Quality Tools
-
-### DRY — drywall
-Run before every handoff. Flag any pair above threshold; do not hand off with unresolved duplication.
-```
-drywall --threshold 0.82 --min-lines 4 --min-nodes 20 .
-```
-
-### CRAP — crap4py (self)
-crap4py uses itself for CRAP analysis once the tool is functional. Generate LCOV with pytest-cov first, then run crap4py on its own source.
-```
-pytest --cov=crap4py --cov-branch --cov-report=lcov:coverage.lcov
-python -m crap4py --lcov coverage.lcov src/
-```
-Until the first working implementation lands, skip the CRAP check and note the omission in the handoff.
-
-### Mutation — mutmut (workaround for mutate4py)
-mutmut is the mutation testing workaround until mutate4py is built. It lacks an embedded manifest (state lives in `mutants/`, not committed), so results are not team-shared — acceptable for this iteration.
-```
-mutmut run
-mutmut results
-```
-Configure `pyproject.toml`:
-```toml
-[tool.mutmut]
-source_paths = ["src/"]
-mutate_only_covered_lines = true
-```
-The architect, hardender, and QA must run mutation tests and fix surviving mutants before handoff. Replace with `mutate4py` once available.
+- DRY: run `drywall --threshold 0.82 --min-lines 4 --min-nodes 20 .` before every handoff. Do not hand off with unresolved duplication above threshold.
+- CRAP: crap4py uses itself. Generate LCOV first with `pytest --cov=crap4py --cov-branch --cov-report=lcov:coverage.lcov`, then run `python -m crap4py --lcov coverage.lcov src/`. Until the first working implementation lands, skip and note the omission in the handoff.
+- Mutation: use `mutmut` as a workaround until `mutate4py` is built. Configure `pyproject.toml` with `[tool.mutmut] source_paths = ["src/"]` and `mutate_only_covered_lines = true`. Run `mutmut run` then `mutmut results`. State lives in `mutants/` and is not committed — acceptable for this iteration. The architect, hardender, and QA must fix surviving mutants before handoff.
