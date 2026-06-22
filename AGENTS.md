@@ -11,3 +11,7 @@ Default label vocabulary — `needs-triage`, `needs-info`, `ready-for-agent`, `r
 ### Domain docs
 
 Single-context repo — `CONTEXT.md` + `docs/adr/` at repo root. See `docs/agents/domain.md`.
+
+### Python invocation
+
+In all shell scripts in this project, use `uv run python` not bare `python`; no venv is activated on PATH (coder A1, session a546a4bb).
