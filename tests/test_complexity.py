@@ -189,6 +189,36 @@ def test_nested_functions(outer_dp, inner_dp, outer_cc, inner_cc):
     assert result["inner"] == inner_cc
 
 
+# complexity-11b: doubly nested functions each scored independently
+def test_doubly_nested_functions():
+    source = (
+        "def outer():\n"
+        "    def middle():\n"
+        "        if x: pass\n"
+        "        def inner():\n"
+        "            if x: pass\n"
+        "            if y: pass\n"
+    )
+    result = cc_named(source)
+    assert result["outer"] == 1
+    assert result["middle"] == 2
+    assert result["inner"] == 3
+
+
+# complexity-11c: functions inside class bodies are scored
+def test_class_methods_scored():
+    source = (
+        "class Foo:\n"
+        "    def bar(self):\n"
+        "        if x: pass\n"
+        "    def baz(self):\n"
+        "        pass\n"
+    )
+    result = cc_named(source)
+    assert result["bar"] == 2
+    assert result["baz"] == 1
+
+
 # complexity-12: mixed constructs
 @pytest.mark.parametrize("ifs,loops,booleans,asserts,expected", [
     (1, 1, 1, 1, 5),

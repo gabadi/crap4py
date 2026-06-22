@@ -50,25 +50,23 @@ def _count_function_body(func_node: ast.AST, results: list[FunctionCC]) -> int:
 
 def _decision_points(node: ast.AST) -> int:
     """Return decision points contributed by a single AST node."""
-    if isinstance(node, ast.If):
+    if isinstance(node, (ast.If, ast.ExceptHandler, ast.IfExp, ast.Assert)):
         return 1
     if isinstance(node, (ast.For, ast.While)):
         return 1 + (1 if node.orelse else 0)
-    if isinstance(node, ast.ExceptHandler):
-        return 1
     if isinstance(node, ast.BoolOp):
         return len(node.values) - 1
-    if isinstance(node, ast.IfExp):
-        return 1
     if isinstance(node, (ast.ListComp, ast.SetComp, ast.GeneratorExp, ast.DictComp)):
         return _comprehension_points(node.generators)
-    if isinstance(node, ast.Assert):
-        return 1
     if isinstance(node, ast.match_case):
-        if _is_wildcard(node.pattern) and node.guard is None:
-            return 0
-        return 1
+        return _match_case_points(node)
     return 0
+
+
+def _match_case_points(node: ast.match_case) -> int:
+    if _is_wildcard(node.pattern) and node.guard is None:
+        return 0
+    return 1
 
 
 def _comprehension_points(generators: list) -> int:
