@@ -7,10 +7,37 @@ from __future__ import annotations
 
 from typing import Callable
 
-from crap4py.discovery import discover_functions
+from crap4py.discovery import discover_functions, FunctionEntry
 from crap4py.complexity import cyclomatic_complexity
 from crap4py.coverage import parse_lcov, resolve_coverage, NA, LcovData
 from crap4py._crap import ReportRow, sort_rows
+
+
+def _default_open(p: str) -> str:
+    with open(p) as f:
+        return f.read()
+
+
+def _filter_by_fragments(
+    entries: list[FunctionEntry], fragments: list[str]
+) -> list[FunctionEntry]:
+    return [e for e in entries if any(frag in e.module_label for frag in fragments)]
+
+
+def _score_entry(
+    entry: FunctionEntry,
+    lcov_data: LcovData,
+    open_fn: Callable[[str], str],
+) -> ReportRow | None:
+    try:
+        source_text = open_fn(entry.module_label)
+    except OSError:
+        return None
+    cc_results = {r.name: r.cc for r in cyclomatic_complexity(source_text)}
+    bare_name = entry.qualified_name.rsplit(".", 1)[-1]
+    cc = cc_results.get(bare_name, 1)
+    cov = resolve_coverage(entry.module_label, entry.line_range, lcov_data)
+    return ReportRow(entry.qualified_name, entry.module_label, cc, cov)
 
 
 def build_report(
@@ -26,27 +53,13 @@ def build_report(
     open_fn: injectable file reader for testing.
     """
     if open_fn is None:
-        def open_fn(p: str) -> str:
-            with open(p) as f:
-                return f.read()
+        open_fn = _default_open
 
-    lcov_text = open_fn(lcov_path)
-    lcov_data: LcovData = parse_lcov(lcov_text)
+    lcov_data: LcovData = parse_lcov(open_fn(lcov_path))
     entries = discover_functions(paths)
 
     if fragments:
-        entries = [e for e in entries if any(frag in e.module_label for frag in fragments)]
+        entries = _filter_by_fragments(entries, fragments)
 
-    rows: list[ReportRow] = []
-    for entry in entries:
-        try:
-            source_text = open_fn(entry.module_label)
-        except OSError:
-            continue
-        cc_results = {r.name: r.cc for r in cyclomatic_complexity(source_text)}
-        bare_name = entry.qualified_name.rsplit(".", 1)[-1]
-        cc = cc_results.get(bare_name, 1)
-        cov = resolve_coverage(entry.module_label, entry.line_range, lcov_data)
-        rows.append(ReportRow(entry.qualified_name, entry.module_label, cc, cov))
-
-    return sort_rows(rows)
+    rows = [_score_entry(e, lcov_data, open_fn) for e in entries]
+    return sort_rows([r for r in rows if r is not None])

@@ -45,33 +45,40 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def _validate_max_workers(raw: str | None) -> int | None:
-    if raw is None:
-        return None
+def _validate_max_workers(raw: str) -> int | None:
     try:
         n = int(raw)
     except ValueError:
-        return None  # signal error
+        return None
     if n <= 0:
         return None
     return n
 
 
-def main(argv: list[str] | None = None) -> None:
-    args = _parse_args(argv)
+def _resolve_workers(raw: str | None) -> None:
+    if raw is None:
+        return
+    if _validate_max_workers(raw) is None:
+        print(
+            f"error: --max-workers requires a positive integer, got {raw!r}",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
-    if args.max_workers is not None:
-        workers = _validate_max_workers(args.max_workers)
-        if workers is None:
-            print(
-                f"error: --max-workers requires a positive integer, got {args.max_workers!r}",
-                file=sys.stderr,
-            )
+
+def _check_crap_gate(rows: list, max_crap: float) -> None:
+    from crap4py.coverage import NA
+    for row in rows:
+        if row.crap is not NA and float(row.crap) > max_crap:
             sys.exit(1)
 
+
+def main(argv: list[str] | None = None) -> None:
     from crap4py._report import build_report
     from crap4py._format import format_report
-    from crap4py.coverage import NA
+
+    args = _parse_args(argv)
+    _resolve_workers(args.max_workers)
 
     if not os.path.isfile(args.lcov):
         print(f"error: LCOV file not found: {args.lcov}", file=sys.stderr)
@@ -86,9 +93,7 @@ def main(argv: list[str] | None = None) -> None:
     print(format_report(rows))
 
     if args.max_crap is not None:
-        for row in rows:
-            if row.crap is not NA and float(row.crap) > args.max_crap:
-                sys.exit(1)
+        _check_crap_gate(rows, args.max_crap)
 
 
 if __name__ == "__main__":
