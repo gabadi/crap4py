@@ -30,9 +30,27 @@ specs, test names, and code.
   computed in its own scope; a nested function's decision points do not count
   toward the enclosing function.
 
-- **Qualified name** — a function entry's display name. A bare function is its
-  own name; a method is `Class.method`; nesting is reflected per ADR 0001 (each
-  nested def is its own entry). (Detailed in C2.)
+- **Qualified name** — a function entry's display name: the `def` name qualified
+  by every enclosing **class**. A module-level function is its own name; a method
+  is `Class.method`; a method on a nested class is `Outer.Inner.method`; a
+  nested/inner `def` is named by its own `def` name (enclosing *functions* do not
+  qualify, only classes do). Decorators (`@property`, `@overload`, …) never change
+  the name, and each `@overload` stub is its own entry. See
+  [ADR 0003](docs/adr/0003-function-discovery-and-naming.md).
+
+- **Module label** — the report's per-function module column: the source file
+  path **relative to the invocation working directory** (e.g.
+  `src/crap4py/complexity.py`). No dotted-import inference. See ADR 0003.
+
+- **Discovery / skip rules** — crap4py walks the given source paths and emits one
+  entry per `def`/`async def`. A path ignored by the project's `.gitignore` is not
+  scored (the drywall strategy), and test files (`test_*.py`, `*_test.py`) are
+  always skipped on top of that. See ADR 0003.
+
+- **Line range** — a function entry's `[start, end]` source-line span, taken from
+  its `ast` node (`lineno`..`end_lineno`); for a decorated function it starts at
+  the `def` line, not the decorator. C3 intersects this range with LCOV `BRDA`
+  records to resolve coverage.
 
 - **Coverage** — the fraction of a function's branches exercised by tests, read
   from LCOV `BRDA` records within the function's line range. See
