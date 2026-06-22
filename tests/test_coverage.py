@@ -222,3 +222,95 @@ def test_coverage_windows_path_normalisation():
     lcov_data = {"src\\foo.py": [(1, "0", 1), (2, "1", 0)]}
     cov = resolve_coverage("src/foo.py", (1, 2), lcov_data)
     assert cov == pytest.approx(0.5)
+
+
+# --- mutant-killing tests ---
+
+def test_parse_brda_split_on_comma_not_other_separator():
+    # mutmut_5: split(",",) removes maxsplit — but "taken" field may contain commas
+    # if BRDA format is "BRDA:line,block,branch,taken" we need maxsplit=3
+    # A BRDA where taken field value matters: ensure exactly 4 parts produced
+    lcov = "TN:\nSF:src/foo.py\nBRDA:5,0,branch,1\nend_of_record\n"
+    result = parse_lcov(lcov)
+    records = result["src/foo.py"]
+    assert len(records) == 1
+    assert records[0] == (5, "branch", 1)
+
+
+def test_parse_brda_rsplit_would_break_branch_id():
+    # mutmut_6: rsplit(",",3) would produce different parts ordering for branch IDs with commas
+    # Test with a BRDA that has branch id containing "jump to line N" — forward split vs rsplit differs
+    lcov = "TN:\nSF:src/foo.py\nBRDA:10,0,jump to line 8,3\nend_of_record\n"
+    result = parse_lcov(lcov)
+    records = result["src/foo.py"]
+    assert records[0] == (10, "jump to line 8", 3)
+
+
+def test_parse_brda_split_maxsplit_3_not_4():
+    # mutmut_9: split(",",4) gives same result for most BRDA but not when taken has commas
+    # Verify taken field parsed correctly with exactly maxsplit=3
+    lcov = "TN:\nSF:src/foo.py\nBRDA:5,0,branch,42\nend_of_record\n"
+    result = parse_lcov(lcov)
+    records = result["src/foo.py"]
+    assert records[0][2] == 42
+
+
+def test_lcov_parse_state_current_records_starts_as_list():
+    # mutmut_3: __init__ sets current_records = None instead of []
+    from crap4py.coverage import _LcovParseState
+    state = _LcovParseState()
+    assert state.current_records == []
+    state.on_brda("BRDA:5,0,0,1")  # would fail if current_records is None
+    assert len(state.current_records) == 1
+
+
+def test_on_end_of_record_clears_current_sf_to_none_not_empty_string():
+    # mutmut_3: on_end_of_record sets current_sf = "" instead of None
+    from crap4py.coverage import _LcovParseState
+    state = _LcovParseState()
+    state.on_sf("src/foo.py")
+    state.on_end_of_record()
+    # After end_of_record, current_sf must be None (not "" or any other falsy-but-not-None value)
+    # parse_lcov guards on_brda with `state.current_sf is not None`
+    # so if current_sf is "" (empty string), the guard passes and BRDA is wrongly accepted
+    assert state.current_sf is None
+
+
+def test_on_end_of_record_resets_current_records_to_list_not_none():
+    # mutmut_4: on_end_of_record sets current_records = None instead of []
+    from crap4py.coverage import _LcovParseState
+    state = _LcovParseState()
+    state.on_sf("src/a.py")
+    state.on_brda("BRDA:5,0,0,1")
+    state.on_end_of_record()
+    state.on_sf("src/b.py")
+    state.on_brda("BRDA:10,0,0,1")  # would fail if current_records is None
+    state.on_end_of_record()
+    assert len(state.result["src/b.py"]) == 1
+
+
+def test_parse_lcov_brda_requires_active_sf_and_not_or():
+    # mutmut_11: `and` changed to `or` — BRDA before any SF would be processed
+    lcov = "BRDA:5,0,0,1\nSF:src/foo.py\nBRDA:10,0,0,1\nend_of_record\n"
+    result = parse_lcov(lcov)
+    # Only the BRDA after SF:src/foo.py should be included
+    records = result["src/foo.py"]
+    assert len(records) == 1
+    assert records[0][0] == 10
+
+
+def test_match_sf_windows_backslash_in_source_path():
+    # mutmut_7: replace("XX\\XX", "/") — source path with backslash not normalized
+    from crap4py.coverage import _match_sf
+    lcov_data = {"/abs/proj/src/foo.py": [(1, "0", 1)]}
+    records = _match_sf("src\\foo.py", lcov_data)
+    assert records is not None
+
+
+def test_match_sf_windows_replacement_target_is_forward_slash():
+    # mutmut_8: replace("\\", "XX/XX") — normalization produces wrong separator
+    from crap4py.coverage import _match_sf
+    lcov_data = {"src/foo.py": [(1, "0", 1)]}
+    records = _match_sf("src\\foo.py", lcov_data)
+    assert records is not None
+    assert records[0][0] == 1
