@@ -3,7 +3,7 @@
   "checkpoint_id": "044749812848",
   "strategy": "manual-commit",
   "branch": "fix/curator-skill-update-pattern",
-  "checkpoints_count": 18,
+  "checkpoints_count": 45,
   "files_touched": [
     ".agents/backlog.md",
     ".agents/ledger-project.md",
@@ -25,13 +25,19 @@
       "transcript": "/04/4749812848/0/full.jsonl",
       "content_hash": "/04/4749812848/0/content_hash.txt",
       "prompt": "/04/4749812848/0/prompt.txt"
+    },
+    {
+      "metadata": "/04/4749812848/1/metadata.json",
+      "transcript": "/04/4749812848/1/full.jsonl",
+      "content_hash": "/04/4749812848/1/content_hash.txt",
+      "prompt": "/04/4749812848/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 12105,
-    "cache_creation_tokens": 135761,
-    "cache_read_tokens": 12538832,
-    "output_tokens": 96054,
-    "api_call_count": 131
+    "input_tokens": 12948,
+    "cache_creation_tokens": 255359,
+    "cache_read_tokens": 21302773,
+    "output_tokens": 158818,
+    "api_call_count": 227
   }
 }

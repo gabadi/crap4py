@@ -1,0 +1,359 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "044749812848",
+  "session_id": "e1fdc5d2-1baf-408c-9b53-3188433f4f02",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-23T07:54:45.43635Z",
+  "branch": "fix/curator-skill-update-pattern",
+  "checkpoints_count": 27,
+  "files_touched": [
+    ".agents/backlog.md",
+    ".agents/ledger-project.md",
+    ".agents/ledger-swarmforge.md",
+    ".agents/roles/curator.md",
+    ".agents/skills/agent-retro-arc-fallback/SKILL.md",
+    ".agents/skills/agent-retro-worktree-fallback/SKILL.md",
+    "swarmforge/roles/curator.prompt"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "3411ff169576",
+  "token_usage": {
+    "input_tokens": 843,
+    "cache_creation_tokens": 119598,
+    "cache_read_tokens": 8763941,
+    "output_tokens": 62764,
+    "api_call_count": 96
+  },
+  "skill_events_version": 1,
+  "skill_events": [
+    {
+      "id": "prompt-skill-claude-code-recall-2026-06-23T05:44:58.927744Z",
+      "event_type": "prompt_invocation",
+      "skill": {
+        "name": "recall"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "prompt_slash_command",
+        "confidence": "explicit"
+      },
+      "turn_id": "6247c124a793",
+      "timestamp": "2026-06-23T05:44:58.927744Z",
+      "native": {
+        "command": "/recall"
+      },
+      "collapse": {
+        "target": "user_message",
+        "label": "/recall",
+        "default_collapsed": true
+      }
+    },
+    {
+      "id": "prompt-skill-claude-code-recall-2026-06-23T05:49:14.077132Z",
+      "event_type": "prompt_invocation",
+      "skill": {
+        "name": "recall"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "prompt_slash_command",
+        "confidence": "explicit"
+      },
+      "turn_id": "9e386b4f2e73",
+      "timestamp": "2026-06-23T05:49:14.077132Z",
+      "native": {
+        "command": "/recall"
+      },
+      "collapse": {
+        "target": "user_message",
+        "label": "/recall",
+        "default_collapsed": true
+      }
+    },
+    {
+      "id": "prompt-skill-claude-code-recall-2026-06-23T06:19:39.965973Z",
+      "event_type": "prompt_invocation",
+      "skill": {
+        "name": "recall"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "prompt_slash_command",
+        "confidence": "explicit"
+      },
+      "turn_id": "50143bfd7dec",
+      "timestamp": "2026-06-23T06:19:39.965973Z",
+      "native": {
+        "command": "/recall"
+      },
+      "collapse": {
+        "target": "user_message",
+        "label": "/recall",
+        "default_collapsed": true
+      }
+    },
+    {
+      "id": "prompt-skill-claude-code-recall-2026-06-23T06:27:05.447634Z",
+      "event_type": "prompt_invocation",
+      "skill": {
+        "name": "recall"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "prompt_slash_command",
+        "confidence": "explicit"
+      },
+      "turn_id": "cf1de5d13537",
+      "timestamp": "2026-06-23T06:27:05.447634Z",
+      "native": {
+        "command": "/recall"
+      },
+      "collapse": {
+        "target": "user_message",
+        "label": "/recall",
+        "default_collapsed": true
+      }
+    },
+    {
+      "id": "claude-skill-toolu_01RJBZEwNEKBPSLfzEs4uT7c",
+      "event_type": "tool_invocation",
+      "skill": {
+        "name": "agent-retro"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "skill_tool_use",
+        "confidence": "explicit"
+      },
+      "turn_id": "3411ff169576",
+      "transcript_anchor": {
+        "unit": "line",
+        "start": 269,
+        "end": 270,
+        "entry_ids": [
+          "13071116-ee5f-4088-8a8d-bb305d7ae246"
+        ],
+        "tool_use_id": "toolu_01RJBZEwNEKBPSLfzEs4uT7c"
+      },
+      "native": {
+        "tool_name": "Skill",
+        "tool_use_id": "toolu_01RJBZEwNEKBPSLfzEs4uT7c"
+      },
+      "collapse": {
+        "target": "tool_pair",
+        "label": "Skill: agent-retro",
+        "default_collapsed": true
+      }
+    }
+  ],
+  "session_metrics": {
+    "turn_count": 31
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-23T07:54:45.404493Z",
+    "agent_lines": 28,
+    "agent_removed": 176,
+    "human_added": 48,
+    "human_modified": 6,
+    "human_removed": 0,
+    "total_committed": 82,
+    "total_lines_changed": 293,
+    "agent_percentage": 69.6245733788396,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 660,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        "lcov.info": 660
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 699,
+      "agent_lines_removed": 111
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 699,
+      "agent_lines_removed": 111
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 699,
+      "agent_lines_removed": 111
+    },
+    {
+      "checkpoint_number": 5,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 699,
+      "agent_lines_removed": 111
+    },
+    {
+      "checkpoint_number": 6,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 692,
+      "agent_lines_removed": 111
+    },
+    {
+      "checkpoint_number": 7,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 691,
+      "agent_lines_removed": 110
+    },
+    {
+      "checkpoint_number": 8,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 9,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 692,
+      "agent_lines_removed": 111
+    },
+    {
+      "checkpoint_number": 10,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 692,
+      "agent_lines_removed": 111
+    },
+    {
+      "checkpoint_number": 11,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 692,
+      "agent_lines_removed": 111
+    },
+    {
+      "checkpoint_number": 12,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 692,
+      "agent_lines_removed": 111
+    },
+    {
+      "checkpoint_number": 13,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 695,
+      "agent_lines_removed": 114
+    },
+    {
+      "checkpoint_number": 14,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 695,
+      "agent_lines_removed": 114
+    },
+    {
+      "checkpoint_number": 15,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 696,
+      "agent_lines_removed": 115
+    },
+    {
+      "checkpoint_number": 16,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 696,
+      "agent_lines_removed": 115
+    },
+    {
+      "checkpoint_number": 17,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 696,
+      "agent_lines_removed": 115
+    },
+    {
+      "checkpoint_number": 18,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 696,
+      "agent_lines_removed": 115
+    },
+    {
+      "checkpoint_number": 19,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 696,
+      "agent_lines_removed": 115
+    },
+    {
+      "checkpoint_number": 20,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 696,
+      "agent_lines_removed": 115
+    },
+    {
+      "checkpoint_number": 21,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 696,
+      "agent_lines_removed": 115
+    },
+    {
+      "checkpoint_number": 22,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 696,
+      "agent_lines_removed": 115
+    },
+    {
+      "checkpoint_number": 23,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 696,
+      "agent_lines_removed": 115
+    },
+    {
+      "checkpoint_number": 24,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 696,
+      "agent_lines_removed": 115
+    },
+    {
+      "checkpoint_number": 25,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 696,
+      "agent_lines_removed": 115
+    },
+    {
+      "checkpoint_number": 26,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 696,
+      "agent_lines_removed": 115
+    },
+    {
+      "checkpoint_number": 27,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 696,
+      "agent_lines_removed": 115
+    }
+  ]
+}

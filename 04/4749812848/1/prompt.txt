@@ -1,0 +1,141 @@
+/recall Explain the learnings in .agents/backlog.md, .agents/ledger-project.md .agents/ledger-swarmforge.md. Focus now in what did we created .agents/skills
+
+---
+
+But why a new skill if clearly its a fix in an existing skill?
+
+---
+
+/recall but what do we need to fix, why did we didn't update?
+
+---
+
+entire search will not work, check in @.entire/
+
+---
+
+You are focusing in the learnings itself, i'm asking why we created two skills and not updated from the begining the skill
+
+---
+
+only  curator, apply the fixexs, and delete the temporal skills. Update the status as needed in the backlog/ledger. The backlog is only  for project? or for swarmforge too?
+
+---
+
+So, .agents/backlog.md is only for swarmforge? not for crap4py?
+
+---
+
+So, .agents/backlog.md is only for swarmforge? not for crap4py? Check the curator promp
+
+---
+
+So today .agents/backlog.md is only swarmforge items?
+
+---
+
+.agents/ledger-project.md why  you added a new log line there, is that the expected change based on the curator prompt?
+
+---
+
+no, what the prompt says?
+
+---
+
+Why entire session current is pending, its not the fix we just made?
+
+---
+
+try the new read/load strategy in the agent-retro skill
+
+---
+
+--summary what does this does?
+
+---
+
+Which other backlog item do we have?
+
+---
+
+1Password mark in the project and any ledger as known issue, and not action will be taken
+
+---
+
+Explain item 2
+
+---
+
+/recall why this is whort learning? seems like  a single iteration  and fix. And why is a swarmforge learning? seems a crap4py learning
+
+---
+
+one-time authoring trap: ok, but can  appear again, what i mean is that this was a single iteration? no? or required more issues from the agent?  And again, why ledger-swarmforge? and again, i need to understand why do we need to fix at all? this has some complexity that required iteration/analysis? or was a simple error sin in the execution and fixed afterwards?
+
+---
+
+/recall one-time authoring trap: ok, but can  appear again, what i mean is that this was a single iteration? no? or required more issues from the agent?  And again, why ledger-swarmforge? and again, i need to understand why do we need to fix at all? this has some complexity that required iteration/analysis? or was a simple error sin in the execution and fixed afterwards?
+
+---
+
+Why you dont use the recall skill i've askd from you?
+
+---
+
+Nevver use entire search., check @.entire/ with rg
+
+---
+
+Nevver use entire search., check @.entire/ with rg
+
+---
+
+Nevver use entire search., check @.entire/ with rg. Or do you have the ids? if you have them you can check directly in entire
+
+---
+
+those are git ids? or sessions ids? why they are not in entire?
+
+---
+
+ok, but check, we need to properly identify  in entire and understand why we can not find them
+
+---
+
+ok, but check, we need to properly identify  in entire and understand why we can not find them
+
+---
+
+why you are not running entire?
+
+---
+
+go on
+
+---
+
+1password is an item on his own, do not mix with other cases. We need a blameless learning about why we missclasified and we marked as learning when it does not add value
+
+---
+
+1password is an item on his own, do not mix with other cases. We need a blameless learning about why we missclasified and we marked as learning when it does not add value. Or maybe in the agent retro where we are clasified irrelevant information like a tool single pass fix
+
+---
+
+1password is an item on his own, do not mix with other cases. We need a blameless learning about why we missclasified and we marked as learning when it does not add value.
+
+---
+
+1password is an item on his own, do not mix with other cases. We need a blameless learning about why we missclasified and we marked as learning when it does not add value.. And remembeer the missclasification regarging project/swarmforge
+
+---
+
+so, make an example fix snippet
+
+---
+
+fix 1: Make a proper rubric on this, this seems like a limited rubric. 2.Ok, and one extra question, seems like the ledger are capturing a lot of non relevant information, no? WDYT? for example must we go on logging those things?
+
+---
+
+1.  Approve, If you ran SwarmForge on a new Python project tomorrow  -> no python. rejected→swarmforge-only directly lets remove any rejected, no? only keep  first currece. Apply, incude the cleanup as needed and backlog update as needed
