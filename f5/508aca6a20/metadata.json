@@ -1,0 +1,25 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "f5508aca6a20",
+  "strategy": "manual-commit",
+  "branch": "fix/curator-skill-update-pattern",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "lcov.info"
+  ],
+  "sessions": [
+    {
+      "metadata": "/f5/508aca6a20/0/metadata.json",
+      "transcript": "/f5/508aca6a20/0/full.jsonl",
+      "content_hash": "/f5/508aca6a20/0/content_hash.txt",
+      "prompt": "/f5/508aca6a20/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 78,
+    "cache_creation_tokens": 34985,
+    "cache_read_tokens": 258629,
+    "output_tokens": 1744,
+    "api_call_count": 9
+  }
+}
