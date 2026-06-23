@@ -1,0 +1,324 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "044749812848",
+  "session_id": "bb89a5d9-7d17-4577-9c95-66d1ac4bf063",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-23T07:54:44.594848Z",
+  "branch": "fix/curator-skill-update-pattern",
+  "checkpoints_count": 18,
+  "files_touched": [
+    ".agents/backlog.md",
+    ".agents/ledger-project.md",
+    ".agents/ledger-swarmforge.md",
+    ".agents/roles/cleaner.md",
+    ".agents/roles/curator.md",
+    ".agents/roles/hardender.md",
+    ".agents/skills/agent-retro-arc-fallback/SKILL.md",
+    ".agents/skills/agent-retro-worktree-fallback/SKILL.md",
+    "AGENTS.md",
+    "swarmforge/constitution/articles/handoffs.prompt",
+    "swarmforge/constitution/articles/local-engineering.prompt",
+    "swarmforge/roles/curator.prompt",
+    "swarmforge/skills/setup-swarm/SKILL.md"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "51ed27708dc7",
+  "token_usage": {
+    "input_tokens": 12105,
+    "cache_creation_tokens": 135761,
+    "cache_read_tokens": 12538832,
+    "output_tokens": 96054,
+    "api_call_count": 131
+  },
+  "skill_events_version": 1,
+  "skill_events": [
+    {
+      "id": "prompt-skill-claude-code-recall-2026-06-23T07:24:55.249634Z",
+      "event_type": "prompt_invocation",
+      "skill": {
+        "name": "recall"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "prompt_slash_command",
+        "confidence": "explicit"
+      },
+      "turn_id": "6fb177aadb6f",
+      "timestamp": "2026-06-23T07:24:55.249634Z",
+      "native": {
+        "command": "/recall"
+      },
+      "collapse": {
+        "target": "user_message",
+        "label": "/recall",
+        "default_collapsed": true
+      }
+    }
+  ],
+  "session_metrics": {
+    "turn_count": 18
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-23T07:54:44.566662Z",
+    "agent_lines": 0,
+    "agent_removed": 29,
+    "human_added": 0,
+    "human_modified": 56,
+    "human_removed": 162,
+    "total_committed": 19,
+    "total_lines_changed": 259,
+    "agent_percentage": 11.196911196911197,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 703,
+      "user_lines_removed": 170,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".agents/backlog.md": 4,
+        ".agents/ledger-project.md": 2,
+        ".agents/ledger-swarmforge.md": 3,
+        ".agents/roles/curator.md": 6,
+        ".claude/skills/agent-retro/SKILL.md": 25,
+        "lcov.info": 660,
+        "swarmforge/roles/curator.prompt": 3
+      },
+      "user_removed_per_file": {
+        ".agents/backlog.md": 4,
+        ".agents/ledger-project.md": 50,
+        ".agents/ledger-swarmforge.md": 3,
+        ".agents/skills/agent-retro-arc-fallback/SKILL.md": 47,
+        ".agents/skills/agent-retro-worktree-fallback/SKILL.md": 53,
+        ".claude/skills/agent-retro/SKILL.md": 10,
+        "swarmforge/roles/curator.prompt": 3
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 703,
+      "agent_lines_removed": 170
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 703,
+      "agent_lines_removed": 170
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 703,
+      "agent_lines_removed": 170
+    },
+    {
+      "checkpoint_number": 5,
+      "user_lines_added": 2,
+      "user_lines_removed": 2,
+      "agent_lines_added": 709,
+      "agent_lines_removed": 176,
+      "user_added_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      },
+      "user_removed_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      }
+    },
+    {
+      "checkpoint_number": 6,
+      "user_lines_added": 16,
+      "user_lines_removed": 12,
+      "agent_lines_added": 709,
+      "agent_lines_removed": 176,
+      "user_added_per_file": {
+        ".agents/backlog.md": 2,
+        ".agents/ledger-swarmforge.md": 7,
+        ".claude/skills/setup-swarm/SKILL.md": 2,
+        "swarmforge/constitution/articles/handoffs.prompt": 4,
+        "swarmforge/constitution/articles/local-engineering.prompt": 1
+      },
+      "user_removed_per_file": {
+        ".agents/backlog.md": 2,
+        ".agents/ledger-swarmforge.md": 7,
+        ".claude/skills/setup-swarm/SKILL.md": 2,
+        "swarmforge/constitution/articles/local-engineering.prompt": 1
+      }
+    },
+    {
+      "checkpoint_number": 7,
+      "user_lines_added": 2,
+      "user_lines_removed": 2,
+      "agent_lines_added": 723,
+      "agent_lines_removed": 186,
+      "user_added_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      },
+      "user_removed_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      }
+    },
+    {
+      "checkpoint_number": 8,
+      "user_lines_added": 2,
+      "user_lines_removed": 2,
+      "agent_lines_added": 727,
+      "agent_lines_removed": 188,
+      "user_added_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      },
+      "user_removed_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      }
+    },
+    {
+      "checkpoint_number": 9,
+      "user_lines_added": 2,
+      "user_lines_removed": 2,
+      "agent_lines_added": 727,
+      "agent_lines_removed": 188,
+      "user_added_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      },
+      "user_removed_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      }
+    },
+    {
+      "checkpoint_number": 10,
+      "user_lines_added": 2,
+      "user_lines_removed": 2,
+      "agent_lines_added": 727,
+      "agent_lines_removed": 188,
+      "user_added_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      },
+      "user_removed_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      }
+    },
+    {
+      "checkpoint_number": 11,
+      "user_lines_added": 2,
+      "user_lines_removed": 2,
+      "agent_lines_added": 727,
+      "agent_lines_removed": 188,
+      "user_added_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      },
+      "user_removed_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      }
+    },
+    {
+      "checkpoint_number": 12,
+      "user_lines_added": 2,
+      "user_lines_removed": 2,
+      "agent_lines_added": 727,
+      "agent_lines_removed": 188,
+      "user_added_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      },
+      "user_removed_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      }
+    },
+    {
+      "checkpoint_number": 13,
+      "user_lines_added": 2,
+      "user_lines_removed": 2,
+      "agent_lines_added": 727,
+      "agent_lines_removed": 188,
+      "user_added_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      },
+      "user_removed_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      }
+    },
+    {
+      "checkpoint_number": 14,
+      "user_lines_added": 2,
+      "user_lines_removed": 2,
+      "agent_lines_added": 727,
+      "agent_lines_removed": 208,
+      "user_added_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      },
+      "user_removed_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      }
+    },
+    {
+      "checkpoint_number": 15,
+      "user_lines_added": 2,
+      "user_lines_removed": 2,
+      "agent_lines_added": 727,
+      "agent_lines_removed": 208,
+      "user_added_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      },
+      "user_removed_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      }
+    },
+    {
+      "checkpoint_number": 16,
+      "user_lines_added": 2,
+      "user_lines_removed": 2,
+      "agent_lines_added": 727,
+      "agent_lines_removed": 208,
+      "user_added_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      },
+      "user_removed_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      }
+    },
+    {
+      "checkpoint_number": 17,
+      "user_lines_added": 2,
+      "user_lines_removed": 2,
+      "agent_lines_added": 727,
+      "agent_lines_removed": 208,
+      "user_added_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      },
+      "user_removed_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      }
+    },
+    {
+      "checkpoint_number": 18,
+      "user_lines_added": 2,
+      "user_lines_removed": 2,
+      "agent_lines_added": 728,
+      "agent_lines_removed": 209,
+      "user_added_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      },
+      "user_removed_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      }
+    },
+    {
+      "checkpoint_number": 19,
+      "user_lines_added": 2,
+      "user_lines_removed": 2,
+      "agent_lines_added": 736,
+      "agent_lines_removed": 209,
+      "user_added_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      },
+      "user_removed_per_file": {
+        ".claude/skills/setup-swarm/SKILL.md": 2
+      }
+    }
+  ]
+}

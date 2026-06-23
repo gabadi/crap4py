@@ -1,0 +1,37 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "044749812848",
+  "strategy": "manual-commit",
+  "branch": "fix/curator-skill-update-pattern",
+  "checkpoints_count": 18,
+  "files_touched": [
+    ".agents/backlog.md",
+    ".agents/ledger-project.md",
+    ".agents/ledger-swarmforge.md",
+    ".agents/roles/cleaner.md",
+    ".agents/roles/curator.md",
+    ".agents/roles/hardender.md",
+    ".agents/skills/agent-retro-arc-fallback/SKILL.md",
+    ".agents/skills/agent-retro-worktree-fallback/SKILL.md",
+    "AGENTS.md",
+    "swarmforge/constitution/articles/handoffs.prompt",
+    "swarmforge/constitution/articles/local-engineering.prompt",
+    "swarmforge/roles/curator.prompt",
+    "swarmforge/skills/setup-swarm/SKILL.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/04/4749812848/0/metadata.json",
+      "transcript": "/04/4749812848/0/full.jsonl",
+      "content_hash": "/04/4749812848/0/content_hash.txt",
+      "prompt": "/04/4749812848/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 12105,
+    "cache_creation_tokens": 135761,
+    "cache_read_tokens": 12538832,
+    "output_tokens": 96054,
+    "api_call_count": 131
+  }
+}
