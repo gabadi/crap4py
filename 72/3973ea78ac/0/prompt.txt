@@ -1,0 +1,166 @@
+What do we have open/pending in .agents/backlog.md ?
+
+---
+
+first  item, do we need to update git settings.json for that? Check in ../swarm-forge, if needed create a  PR there and here manually modify the settings.json
+
+---
+
+Do not check example in swarmforge, if we will modify the settings there must be in the swarmfortge engine itself
+
+---
+
+swarm-forge, check that we update the settings file, we need to include this too. And update status here of this tasks/ledger as needed
+
+---
+
+again, do not check the settings in swarm-forge project, check that the swarm forge engine modifies the settings
+
+---
+
+ok, in that case include in setup skill or as needed
+
+---
+
+Wwhich was yours previous plan?
+
+---
+
+no, modify the setup, and go on
+
+---
+
+ok, so check there we can modify the settings file maybe
+
+---
+
+Whats next?
+
+---
+
+1. Apply
+
+---
+
+1 and 2. Apply
+
+---
+
+forget about  cannonical now
+
+---
+
+No, keep the prev change in cannonical, do not apply THIS change in cannonical
+
+---
+
+i've restored already, anything missing here?
+
+---
+
+1. What do we need to do? we are making a lot of  changes, you can see other changes,be aware
+
+---
+
+Ok, what else is in backlog?
+
+---
+
+Explain,   donnt understand. And its ok that all of them runs mutmut? check each prompt
+
+---
+
+/recall Again, be more clear regarding why is this broken
+
+---
+
+search will be empty, use @.entire/ search
+
+---
+
+be more clear and direct
+
+---
+
+ok, a couple  of things here. 1. .agents/role/ must automatically be loaded  by swarmforge engine. 2. The mutmut incompatibilities are because its not the correct  mutation engine, check for example unclebob mutate4go and mutate4clj, there you will find the mutation tool that we need to implement in the uture and we will not have this issue. Refrme based on this context
+
+---
+
+1. .agents/roles/<role>.md <- ensure that the curator uses this pattern, and this file its optioal . The file load must be dynamical, can be added new data while  running in next iteration.  this fix goes in the current branch in ../gabadi-swarm-forge (we already have some changes). And we can delete the AGENTS.md mappings now.  Point 2: We will not create it now, we can update the .agents/roles/<role>.md now maybe, but we must keep the same idea, we don't run the full mutation, or from where are you taking this idea? reframe
+
+---
+
+~/workspace/addi/gabadi-swarm-forge/swarmforge/scripts/swarmforge.bb, but the role must be set, do not let the agent decide the role
+
+---
+
+engine pin forget, i'll apply later. Explain point 2
+
+---
+
+engine pin forget, i'll apply later. Explain point 2, do not give details, give me exactly what is missing
+
+---
+
+ok, what do we need?
+
+---
+
+apply
+
+---
+
+apply--max-children. is the same than --max-workers?
+
+---
+
+no change in the roles for this, if we change anything must be in the .agents/roles/
+
+---
+
+only the hardener? no other role? anything missing in the backlog update/ledger? if we are ready  create a PR here and there
+
+---
+
+Explain the changes in swarmforge/scripts/swarmforge.bb? was not in gitignore?
+
+---
+
+Explain the changes in swarmforge/scripts/swarmforge.bb? was not in gitignore? at least for  crap4py
+
+---
+
+swarmforge/scripts/swarmforge.bb explain this change in swarmforge/scripts/swarmforge.bb, you added more changes than expected. Its a single change to include the role, startfrom the dif vs main/master, and be clear regarding <project root>/.agents/roles/
+
+---
+
+yes
+
+---
+
+Now check in https://github.com/gabadi/crap4py/pull/21/changes the changes in swarmforge/roles/curator.prompt and swarmforge/constitution/articles/handoffs.prompt, are the minimal and exact changes expected? each token is important
+
+---
+
+So, what do w e need to update, be more direct
+
+---
+
+Not, i'm asking about the amount of tokens, not functionality cut off
+
+---
+
+Not, i'm asking about the amount of tokens, not functionality cut off. Or be more clear regardng what is incosinstent before, maybe i'm missing something
+
+---
+
+no, make consistent the curator, we need to drop ephimeral. And  which is the specific proposal regarding the hardener, its a rubric, we need it no?
+
+---
+
+go on
+
+---
+
+(all other discards are silent; ephemerals go
+         + to the PR metric only — see below), explain this, why this duality?
