@@ -115,3 +115,7 @@ apply--max-children. is the same than --max-workers?
 ---
 
 no change in the roles for this, if we change anything must be in the .agents/roles/
+
+---
+
+only the hardener? no other role? anything missing in the backlog update/ledger? if we are ready  create a PR here and there
