@@ -1,7 +1,7 @@
 ---
 name: agent-retro
 description: Run a conversation retrospective — analyze what happened in this session, what worked, what didn't, and propose concrete improvements. Use when the user says "retro", "retrospective", "what happened in this session", "session review", "what did we do", "analyze this conversation", or when wrapping up a long session. Especially useful after using a skill you're developing. In swarmforge: invoked automatically as the last step before each role goes idle.
-compatibility: Primary — requires `entire` CLI (0.6.2+) for transcript extraction. Fallback — Claude Code ~/.claude/projects/ path. Python 3.8+ for the extraction script.
+compatibility: Primary — requires `entire` CLI (0.6.2+) for transcript extraction. Fallback — Claude Code ${CLAUDE_CONFIG_DIR:-~/.claude}/projects/ path. Python 3.8+ for the extraction script.
 metadata:
   author: gabadi/swarm-forge (fork of giannimassi/agent-retro)
   version: "0.1.0"
@@ -13,17 +13,19 @@ metadata:
 
 **Primary path (entire):**
 1. Run `entire session current --json` to get the active session ID and worktree path.
-2. If a session ID is returned:
+2. Parse the result and check `worktree_path`. If `worktree_path` does NOT match `$PWD`, the result is stale (entire indexed a different session). Skip `entire session info` entirely and go directly to the Fallback path below.
+3. If `worktree_path` matches `$PWD` and a session ID is returned:
    - Run `entire session info <id> --transcript > /tmp/retro-session.jsonl`
    - Verify: `python3 ${CLAUDE_SKILL_DIR}/scripts/extract.py /tmp/retro-session.jsonl --metadata-only`
    - If verification succeeds, run full extraction: `python3 ${CLAUDE_SKILL_DIR}/scripts/extract.py /tmp/retro-session.jsonl --summary > /tmp/retro-extract.json`
    - Proceed to Step 2 with `/tmp/retro-extract.json`.
 
 **Fallback path (Claude Code only):**
-If `entire` is not installed or `entire session current` returns no session:
-1. Look for session pid files in `~/.claude/sessions/*.json`. Read each, match `cwd` to `$PWD`. Take the most recently modified matching entry.
-2. If found: use the `sessionId` to find the transcript in `~/.claude/projects/<encoded-cwd>/<session-id>.jsonl`.
-3. If not found via pid: take the most recently modified `.jsonl` in `~/.claude/projects/<encoded-cwd>/`.
+Use when `entire` is not installed, `entire session current` returns no session, or worktree_path does not match `$PWD`:
+1. Look for session pid files in `${CLAUDE_CONFIG_DIR:-~/.claude}/sessions/*.json`. Read each, match `cwd` to `$PWD`. Take the most recently modified matching entry.
+2. If found: use the `sessionId` to find the transcript in `${CLAUDE_CONFIG_DIR:-~/.claude}/projects/<encoded-cwd>/<session-id>.jsonl`.
+3. If not found via pid: take the most recently modified `.jsonl` in `${CLAUDE_CONFIG_DIR:-~/.claude}/projects/<encoded-cwd>/`.
+   - Path encoding: every `/` in `$PWD` becomes `-`, leading `/` is dropped. **Critical:** a `.` at the start of a path segment becomes an extra `-` (e.g. `.worktrees` → `--worktrees`). Do not use naive `sed 's|/|-|g'` — use `ls ${CLAUDE_CONFIG_DIR:-~/.claude}/projects/ | grep <last-segment-of-PWD>` to find the correct directory.
 4. Verify: `python3 ${CLAUDE_SKILL_DIR}/scripts/extract.py <path> --metadata-only`
 5. Run full extraction: `python3 ${CLAUDE_SKILL_DIR}/scripts/extract.py <path> --summary > /tmp/retro-extract.json`
 
@@ -35,9 +37,9 @@ Raw JSONL is 1MB+ per session — never stream transcript bytes inline into cont
 
 ## Step 2 — Read the Conversation Arc
 
-Read `conversation_arc` from `/tmp/retro-extract.json`. This is the full story of the session: every user message and assistant response in order.
+Read `conversation_arc` from `/tmp/retro-extract.json`. Check whether any entries have non-null `content`. If all entries have null or empty `content`, the extractor failed silently — do not attempt to use the arc. Instead, reconstruct the session narrative from live context: recall tool calls and outputs that succeeded, failed, or required retries, and any user corrections. Mark token budget fields as `(unavailable — extract.py returned no cost data)` if those fields are also null. Continue to Step 3 using in-context reconstruction only.
 
-Identify:
+When the arc is populated, identify:
 - User corrections ("no, not that", "stop", "undo", "wrong")
 - Redirects (user changing direction mid-task)
 - Repeated instructions (same request given more than once)
@@ -119,7 +121,7 @@ Be specific. "Improve X" is not a proposal. "Change the wording in Step 3 from Y
 
 ## Step 7 — Write the Retro File
 
-Write to `~/.claude/worklog/retros/YYYY-MM-DD-<slug>.md` where `<slug>` is a 3–5 word kebab-case summary of the session.
+Write to `${CLAUDE_CONFIG_DIR:-~/.claude}/worklog/retros/YYYY-MM-DD-<slug>.md` where `<slug>` is a 3–5 word kebab-case summary of the session.
 
 Structure:
 ```markdown

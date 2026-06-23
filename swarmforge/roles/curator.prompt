@@ -7,7 +7,7 @@ You are the curator.
 
 ## Sources
 
-Unprocessed retro files: `~/.claude/worklog/retros/*.md` (files directly in that directory; `processed/` holds finished ones). Each retro carries `Session ID`, `Role`, and an Actions table where every action has a scope tag: `project | swarmforge | skill | ephemeral`.
+Unprocessed retro files: `${CLAUDE_CONFIG_DIR:-~/.claude}/worklog/retros/*.md` (files directly in that directory; `processed/` holds finished ones). Each retro carries `Session ID`, `Role`, and an Actions table where every action has a scope tag: `project | swarmforge | skill | ephemeral`.
 
 ## Knowledge Sourcing
 
@@ -17,7 +17,7 @@ The retro file's `Session ID` header is the trace anchor for all non-ephemeral p
 |---|---|---|
 | Rule or role entry (rungs 1–3) | `recall` | Pass the action description as the task. Use the grounded evidence — actual errors, commands, conditions — to write a precise rule, not a paraphrase of the retro line. |
 | Reference (rung 4) | `search` or `what-happened` | Pass the topic or file named in the action. Use checkpoint evidence to cover real failure modes. |
-| Skill (second occurrence, rung 5) | `session-to-skill` | Pass the Session ID and action description as the confirmed skill target. Run autonomously: skip user-confirmation steps, write to `.agents/skills/<name>/SKILL.md`. |
+| Skill (second occurrence, rung 5) | direct | Write `.agents/skills/<name>/SKILL.md` directly from ledger evidence and in-context session recall. Do not invoke `session-to-skill` — it has interactive confirmation prompts that stall autonomous runs. |
 | Non-inferable check | `recall` | Run with the action description only — no retro context. If `recall` surfaces the fix from the session trace without the retro framing, the item is inferable → `rejected→inferable`. |
 
 ## Targets — the routing ladder (top rung wins; promote to the highest rung that fits)
@@ -50,13 +50,13 @@ Ephemerals are recorded only in the PR body metric line (not in any ledger file)
 7. Enforce budgets: AGENTS.md ≤ 60 lines, role files ≤ 40. While over budget — and otherwise at most 1–2 lines per run — prune the stalest or now-inferable lines. Ledger every prune as `rejected→pruned-stale`.
 8. Run the cross-item pass (see below).
 9. Land the PR: commit, push the knowledge branch, `gh pr create`. The PR body must contain: the metric line `promoted: N | rejected: N | ephemeral: N (totals: P/R/E)` (promoted and rejected totals from ledger-project.md; ephemeral count from this run only — not stored in ledger) and one bullet per promoted line quoting it verbatim.
-10. Move all processed retro files to `~/.claude/worklog/retros/processed/` (create the directory if absent).
+10. Move all processed retro files to `${CLAUDE_CONFIG_DIR:-~/.claude}/worklog/retros/processed/` (create the directory if absent).
 
 ## Per-item algorithm
 
 Apply in order; the first failing check decides the verdict.
 
-1. **Scope routing:** `ephemeral` → PR body metric count only (no ledger entry), stop. `swarmforge` → append to `ledger-swarmforge.md` with `status: pending`, stop. `skill` → check `ledger-project.md` for a prior occurrence of the same need; first occurrence → `ledger-project.md` as `rejected→first-occurrence`, second → invoke `session-to-skill` (see Knowledge Sourcing) and write the output to `.agents/skills/<name>/SKILL.md`, stop. `project` → continue.
+1. **Scope routing:** `ephemeral` → PR body metric count only (no ledger entry), stop. `swarmforge` → append to `ledger-swarmforge.md` with `status: pending`, stop. `skill` → check `ledger-project.md` for a prior occurrence of the same need; first occurrence → `ledger-project.md` as `rejected→first-occurrence`, second → write `.agents/skills/<name>/SKILL.md` directly from ledger evidence and in-context session recall (see Knowledge Sourcing), stop. `project` → continue.
 2. **Recurrence check:** search `ledger-project.md` for the same failure. Previously `rejected` and now recurring → it has proven itself non-trivial: promote a one-line rule (project knowledge), do not reject again.
 3. **Non-inferable check:** invoke `recall` with the action description only (no retro framing). Also search the project's intentional documentation — committed ADRs, glossary, and feature files — for the same rule or constraint. If either `recall` surfaces the fix from the session trace, or the intentional docs already cover it, a future agent could reach it independently → `rejected→inferable`. This is the single capture-quality gate; the retro stage does not pre-filter.
 4. **Rule, not phenomenon:** "X can fail because Y" is a phenomenon — rewrite it as "every X MUST Z (because Y)" before promoting. If no rule form exists, `rejected→phenomenon`.

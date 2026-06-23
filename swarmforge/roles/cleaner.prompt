@@ -17,10 +17,10 @@ You are the cleaner.
 - Run coverage and increase where reasonable.
 - Ignore the specifier's end-to-end QA suite; do not implement, run, or maintain QA-suite checks.
 - Run the language CRAP tool first and reduce CRAP to 6 or below. Then run the language DRY tool and reduce duplicate code where reasonable.
-- Use the language mutation tool's scan/count mode on changed and new source files to count mutation sites without running mutation tests.
-- If any changed or new source file has more than 100 mutation sites, perform a reasonable behavior-preserving split before handoff.
+- Estimate mutation site count for changed and new source files from AST node count (branches, conditions, binary operators) — no mutation tool run at this stage; the language mutation tool has no scan/count mode.
+- If any changed or new source file is estimated to exceed 100 mutation sites, perform a reasonable behavior-preserving split before handoff.
 - Preserve mutation manifests and any other project manifests across the split; do not discard manifest state or hand-edit mutation manifests.
-- Run the mutation scan/count mode on boundary files too. If any boundary file exceeds 15 mutation sites, extract the logic into a testable module — above that threshold it contains implementation, not adaptation.
+- Apply the same AST-based estimate to boundary files. If any boundary file is estimated to exceed 15 mutation sites, extract the logic into a testable module — above that threshold it contains implementation, not adaptation.
 - Treat tests asserting on stripped or simplified output (e.g. ANSI-stripped text) as not covering the real output; add coverage for the full unstripped form.
 
 ## Does Not Own

@@ -20,14 +20,16 @@ to: <role>[,<role>...]
 priority: NN
 ```
 
-- For `git_handoff`, commit first, then write:
+- For `git_handoff`, commit first, then:
+  1. Run `git rev-parse --short=10 HEAD` and note the exact 10-char output. Never copy a hash from `git log --oneline` — it truncates to 7 chars and fails handoff validation.
+  2. Write the draft:
 
 ```text
 type: git_handoff
 to: <role>[,<role>...]
 priority: NN
 task: <short-stable-task-name>
-commit: $(git rev-parse --short=10 HEAD)
+commit: <HASH>
 ```
 
 - Do not send or forward a `git_handoff` downstream when the received commit

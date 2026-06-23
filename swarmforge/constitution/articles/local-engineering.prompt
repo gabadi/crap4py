@@ -6,8 +6,12 @@
 
 ## Code Quality Tools
 - DRY: run `drywall --threshold 0.82 --min-lines 4 --min-nodes 20 .` before every handoff. Do not hand off with unresolved duplication above threshold.
-- CRAP: crap4py uses itself. Generate LCOV first with `pytest --cov=crap4py --cov-branch --cov-report=lcov:coverage.lcov`, then run `python -m crap4py --lcov coverage.lcov src/`. Until the first working implementation lands, skip and note the omission in the handoff.
+- CRAP: crap4py uses itself. Generate LCOV first with `pytest --cov=crap4py --cov-branch --cov-report=lcov:coverage.lcov`, then run `uv run python -m crap4py --lcov coverage.lcov src/`. Do not use bare `python -m crap4py` (no venv on PATH) or `rtk python -m crap4py` (rtk breaks the invocation). Until the first working implementation lands, skip and note the omission in the handoff.
 - Mutation: use `mutmut` as a workaround until `mutate4py` is built. Configure `pyproject.toml` with `[tool.mutmut] source_paths = ["src/"]` and `mutate_only_covered_lines = true`. Run `uv run mutmut run` (resumes incrementally — re-tests only mutants in changed functions; never delete `mutants/` between agent runs), then read results with `uv run mutmut results`. State lives in `mutants/` and is not committed — acceptable for this iteration. The architect, hardender, and QA must fix surviving mutants before handoff.
+  - **No scan/count mode.** mutmut has no count-only mode; estimate site count from AST node count instead.
+  - **No targeted reruns.** Analyze ALL survivors as a batch first. Targeted reruns (`uv run mutmut run <name>`) reset the incremental cache, forcing a full re-run and showing 0 files mutated — never use them before a full-run analysis.
+  - **Merge invalidates mutmut state.** After any source merge, all mutant entries show `not checked`. Always re-run `pytest --cov=crap4py --cov-branch --cov-report=lcov:coverage.lcov` then `uv run mutmut run` before reading results.
+  - **Adding tests does not re-test existing mutants.** mutmut only re-tests mutants in *changed* source functions. To force a recheck of a specific mutant after writing a kill-test, use `uv run mutmut run <mutant-name>`.
 
 ## Project Language
 - Project language: Python.
