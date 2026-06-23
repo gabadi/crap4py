@@ -27,10 +27,10 @@ The retro file's `Session ID` header is the trace anchor for all non-ephemeral p
 3. **`.agents/roles/<role>.md`** — operational knowledge for one role. Cap 40 lines. Create lazily, only when the first promotion for that role arrives.
 4. **`.agents/references/<topic>.md`** — deep dives. Unbounded, but every reference must have a pointer line in `AGENTS.md` or a role file, or it will never load.
 5. **`.agents/skills/<name>/`** — procedures. Create only on the second occurrence of the same need (the ledger proves recurrence).
-6. **Ledger only** — rejected and discarded items (not ephemerals — see below).
+6. **Ledger only** — `rejected→first-occurrence` items; everything else is silent.
 
 Two audit files replace `ledger.md`:
-- `.agents/ledger-project.md` — permanent, append-only. Contains only `rejected` and `promoted` items (never ephemerals). Format: `<date> | <session-id> | <role> | <failure-class> | <verdict> | <one-line summary>`
+- `.agents/ledger-project.md` — permanent, append-only. Contains only `promoted` items and `rejected→first-occurrence` items. All other rejection reasons are silent — do not log them. Format: `<date> | <session-id> | <role> | <failure-class> | <verdict> | <one-line summary>`
 - `.agents/ledger-swarmforge.md` — work queue, prunable. Contains only `swarmforge`-scoped items. Format: `<date> | <session-id> | <role> | <failure-class> | <verdict> | <status> | <one-line summary>` where `status` ∈ `pending|applied|stale`.
 
 Ephemerals are recorded only in the PR body metric line (not in any ledger file).
@@ -45,7 +45,7 @@ Ephemerals are recorded only in the PR body metric line (not in any ledger file)
 3. Collect unprocessed retro files. **Empty run:** no PR, no commits — skip to step 9 immediately.
 4. Create the knowledge branch: `git checkout -b knowledge/<specifier-handoff-name> origin/$(git symbolic-ref --short refs/remotes/origin/HEAD | sed 's|origin/||')`.
 5. **Bootstrap:** if `AGENTS.md`, `.agents/ledger-project.md`, or `.agents/ledger-swarmforge.md` does not exist, create the missing files on this branch (empty ledger headers; AGENTS.md with a `# AGENTS.md` title only).
-6. Process every action of every unprocessed retro through the per-item algorithm below. Every non-ephemeral item gets a ledger line — including discards.
+6. Process every action of every unprocessed retro through the per-item algorithm below. Only `promoted` items and `rejected→first-occurrence` items get a ledger line; all other discards are silent.
 6a. Prune `ledger-swarmforge.md`: remove entries with `status: applied` older than 3 curator cycles (approximate by date — 3 prior PR merges). Mark entries `status: stale` if they have been `pending` for more than 5 cycles.
 7. Enforce budgets: AGENTS.md ≤ 60 lines, role files ≤ 40. While over budget — and otherwise at most 1–2 lines per run — prune the stalest or now-inferable lines. Ledger every prune as `rejected→pruned-stale`.
 8. Run the cross-item pass (see below).
@@ -56,7 +56,7 @@ Ephemerals are recorded only in the PR body metric line (not in any ledger file)
 
 Apply in order; the first failing check decides the verdict.
 
-1. **Scope routing:** `ephemeral` → PR body metric count only (no ledger entry), stop. `swarmforge` → append to `ledger-swarmforge.md` with `status: pending`, stop. `skill` → check `ledger-project.md` for a prior occurrence of the same need; first occurrence → `ledger-project.md` as `rejected→first-occurrence`, second → invoke `session-to-skill` (see Knowledge Sourcing) and write the output to `.agents/skills/<name>/SKILL.md`, stop. `project` → continue.
+1. **Scope routing:** `ephemeral` → PR body metric count only (no ledger entry), stop. `swarmforge` → validate scope first using the three-question rubric — (a) does the preventive fix land in a swarmforge artifact (role prompt, constitution, harness script)? (b) would this rule apply unchanged on a different project running SwarmForge? (c) is the failure about pipeline coordination, not domain logic? All three must point swarmforge; if any point project, re-scope to `project` and continue. If scope confirmed: append to `ledger-swarmforge.md` with `status: pending`, stop. `skill` → check `ledger-project.md` for a prior occurrence of the same need; first occurrence → `ledger-project.md` as `rejected→first-occurrence`, second → invoke `session-to-skill` (see Knowledge Sourcing) and write the output to `.agents/skills/<name>/SKILL.md`, stop. `project` → continue.
 2. **Recurrence check:** search `ledger-project.md` for the same failure. Previously `rejected` and now recurring → it has proven itself non-trivial: promote a one-line rule (project knowledge), do not reject again.
 3. **Non-inferable check:** invoke `recall` with the action description only (no retro framing). Also search the project's intentional documentation — committed ADRs, glossary, and feature files — for the same rule or constraint. If either `recall` surfaces the fix from the session trace, or the intentional docs already cover it, a future agent could reach it independently → `rejected→inferable`. This is the single capture-quality gate; the retro stage does not pre-filter.
 4. **Rule, not phenomenon:** "X can fail because Y" is a phenomenon — rewrite it as "every X MUST Z (because Y)" before promoting. If no rule form exists, `rejected→phenomenon`.
@@ -68,7 +68,7 @@ Apply in order; the first failing check decides the verdict.
 
 ## Cross-item pass
 
-After the per-item loop completes, group all items appended to `ledger-swarmforge.md` in this run by `failure-class`. If the same failure mechanism (same class + similar summary) appears in entries from ≥2 different roles in this run, append a backlog entry to `.agents/backlog.md`:
+After the per-item loop completes, group all items appended to `ledger-swarmforge.md` in this run by `failure-class`. If the same failure mechanism (same class + similar summary) appears in entries from ≥2 different roles in this run AND at least one entry shows meaningful friction (user correction, work blocked, multiple retry turns, or recurrence across pipeline runs), append a backlog entry to `.agents/backlog.md`. Self-correcting mistakes resolved in ≤3 turns with no user correction do not qualify even if two roles hit them.
 
 ```
 <date> | swarmforge-pattern | <failure-class> | <roles affected> | pending | <one-line description of the shared mechanism>

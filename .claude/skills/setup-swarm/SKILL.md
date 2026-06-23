@@ -70,7 +70,7 @@ Write minimal allow-rules to `.claude/settings.json` so the integrator and speci
   "permissions": {
     "allow": [
       "Bash(gh pr merge*)",
-      "Bash(git reset --hard origin/*)"
+      "Bash(git reset --hard*)"
     ]
   }
 }
@@ -82,7 +82,7 @@ import json, pathlib
 p = pathlib.Path('.claude/settings.json')
 cfg = json.loads(p.read_text()) if p.exists() else {}
 cfg.setdefault('permissions', {}).setdefault('allow', [])
-for rule in ['Bash(gh pr merge*)', 'Bash(git reset --hard origin/*)']:
+for rule in ['Bash(gh pr merge*)', 'Bash(git reset --hard*)']:
     if rule not in cfg['permissions']['allow']:
         cfg['permissions']['allow'].append(rule)
 p.parent.mkdir(exist_ok=True)
