@@ -164,3 +164,7 @@ go on
 
 (all other discards are silent; ephemerals go
          + to the PR metric only — see below), explain this, why this duality?
+
+---
+
+Lets KISS whatever is KISS, not relevant  the ephimerals
