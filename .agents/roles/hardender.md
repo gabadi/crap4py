@@ -15,3 +15,7 @@ After `merge_and_process.sh` or any source merge, all mutants show `not checked`
 ## mutmut-stats.json structure
 
 `mutants/mutmut-stats.json` key `tests_by_mangled_function_name` maps mangled function names → tests mutmut will run against each mutant. Useful for diagnosing why a covered mutant still survives. (hardender d8370093)
+
+## mutmut worker-limit flag is `--max-children`, not `--max-workers`
+
+The role prompt's "worker limits" guidance maps to mutmut's `--max-children N`. mutmut has no `--max-workers` flag — passing it errors. Verified against `mutmut run --help`. (hardender 773c8e94)

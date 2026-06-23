@@ -30,6 +30,12 @@ task: <short-stable-task-name>
 commit: $(git rev-parse --short=10 HEAD)
 ```
 
+- The `commit:` value MUST be the literal output of `git rev-parse --short=10 <ref>`
+  (exactly 10 hex characters). Run that command against the ref you are handing off —
+  `HEAD` in the normal case, but `origin/main` (or the trunk ref) after a merge, when
+  your `HEAD` is still on your own branch. Never copy a hash from `git log` or
+  `git show`, whose default short form is 7 characters and will be rejected.
+
 - Do not send or forward a `git_handoff` downstream when the received commit
   produces no functional project change. Complete the inbound task instead.
 - Treat manifest-only, audit-only, generated metadata, formatting-only, and
