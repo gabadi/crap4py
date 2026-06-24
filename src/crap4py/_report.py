@@ -53,6 +53,29 @@ def _score_file(
     return rows
 
 
+def _should_parallelize(groups: dict, max_workers: int | None) -> bool:
+    return max_workers is not None and max_workers > 1 and len(groups) > 1
+
+
+def _parallel_rows(
+    groups: dict[str, list[FunctionEntry]],
+    lcov_data: LcovData,
+    open_fn: Callable[[str], str],
+    max_workers: int,
+) -> list[ReportRow]:
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(_score_file, lbl, es, lcov_data, open_fn) for lbl, es in groups.items()]
+        return [row for fut in futures for row in fut.result()]
+
+
+def _serial_rows(
+    groups: dict[str, list[FunctionEntry]],
+    lcov_data: LcovData,
+    open_fn: Callable[[str], str],
+) -> list[ReportRow]:
+    return [row for lbl, es in groups.items() for row in _score_file(lbl, es, lcov_data, open_fn)]
+
+
 def build_report(
     lcov_path: str,
     paths: list[str],
@@ -69,27 +92,10 @@ def build_report(
     """
     if open_fn is None:
         open_fn = _default_open
-
     lcov_data: LcovData = parse_lcov(open_fn(lcov_path))
     entries = discover_functions(paths)
-
     if fragments:
         entries = _filter_by_fragments(entries, fragments)
-
     groups = _group_by_module(entries)
-
-    if max_workers is not None and max_workers > 1 and len(groups) > 1:
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = [
-                executor.submit(_score_file, label, file_entries, lcov_data, open_fn)
-                for label, file_entries in groups.items()
-            ]
-            all_rows = [row for future in futures for row in future.result()]
-    else:
-        all_rows = [
-            row
-            for label, file_entries in groups.items()
-            for row in _score_file(label, file_entries, lcov_data, open_fn)
-        ]
-
+    all_rows = _parallel_rows(groups, lcov_data, open_fn, max_workers) if _should_parallelize(groups, max_workers) else _serial_rows(groups, lcov_data, open_fn)
     return sort_rows(all_rows)

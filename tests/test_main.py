@@ -310,6 +310,26 @@ def test_main_format_json_na_coverage_is_null(tmp_path, monkeypatch, capsys):
     assert fn["crap"] is None
 
 
+def test_main_format_json_empty_rows_null_summary(tmp_path, monkeypatch, capsys):
+    lcov_file = tmp_path / "coverage.lcov"
+    lcov_file.write_text("TN:\nend_of_record\n")
+    monkeypatch.setattr(sys, "argv", ["crap4py", "--lcov", str(lcov_file), "--format", "json", str(tmp_path)])
+
+    import json
+
+    from crap4py.__main__ import main
+
+    main()
+    captured = capsys.readouterr()
+    data = json.loads(captured.out)
+    assert data["functions"] == []
+    summary = data["summary"]
+    assert summary["totalFunctions"] == 0
+    assert summary["averageCc"] is None
+    assert summary["averageCrap"] is None
+    assert summary["worstCrap"] is None
+
+
 def test_main_max_workers_wired_to_build_report(tmp_path, monkeypatch, capsys):
     lcov_file = tmp_path / "coverage.lcov"
     lcov_file.write_text("TN:\nend_of_record\n")
