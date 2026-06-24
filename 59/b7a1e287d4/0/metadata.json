@@ -1,0 +1,55 @@
+{
+  "cli_version": "0.7.5",
+  "checkpoint_id": "59b7a1e287d4",
+  "session_id": "2cd14d14-ebf8-4f85-bb3e-3d700ac03c94",
+  "strategy": "manual-commit",
+  "created_at": "2026-06-24T03:05:00.913199Z",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "README.md",
+    "pyproject.toml",
+    "LICENSE"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "2e8297e60ee1",
+  "checkpoint_transcript_start": 230,
+  "transcript_lines_at_start": 230,
+  "token_usage": {
+    "input_tokens": 140,
+    "cache_creation_tokens": 6826,
+    "cache_read_tokens": 1061697,
+    "output_tokens": 4186,
+    "api_call_count": 17
+  },
+  "session_metrics": {
+    "turn_count": 10
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-06-24T03:05:00.892375Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 0,
+    "total_lines_changed": 0,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 96,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        "LICENSE": 21,
+        "README.md": 65,
+        "pyproject.toml": 10
+      }
+    }
+  ]
+}

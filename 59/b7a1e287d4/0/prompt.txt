@@ -1,0 +1,21 @@
+done step 1 and 2
+
+---
+
+something importnat before we dploy, can we run crap4py as uvx?
+
+---
+
+Do we need a README/documentation?
+
+---
+
+WDYT? which is the standard?
+
+---
+
+apply
+
+---
+
+something important, we must be clear that this is a port of unclebob/crap4go and crap4clj
