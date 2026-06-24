@@ -1,0 +1,107 @@
+We need a full CI and tag based releases, fully understand the project and make a proposal
+
+---
+
+We need a full CI and tag based releases, fully understand the project and make a proposal. This project must be installed by uv/uvx, how can we do that?
+
+---
+
+<task-notification>
+<task-id>af2c42c7bd740a694</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-gabadi-workspace-addi-crap4py/45329b99-69a5-4bd4-9f05-b93ce240306c/tasks/af2c42c7bd740a694.output</output-file>
+<status>completed</status>
+<summary>Agent "Explore project structure for CI/release proposal" finished</summary>
+<note>A task-notification fires each time this agent stops with no live background children of its own. The user can send it another message and resume it, so the same task-id may notify more than once.</note>
+<result>**Task:** Survey crap4py for CI + tag-based release proposal.
+
+---
+
+## Findings
+
+### 1. pyproject.toml (full)
+
+```toml
+[project]
+name = "crap4py"
+version = "0.1.0"
+description = "CRAP score per function for Python source files"
+requires-python = "&gt;=3.10"
+dependencies = []
+
+[project.scripts]
+crap4py = "crap4py.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crap4py"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--tb=short"
+
+[tool.coverage.run]
+source = ["crap4py"]
+branch = true
+
+[tool.mutmut]
+source_paths = ["src/"]
+mutate_only_covered_lines = true
+
+[dependency-groups]
+dev = [
+    "hypothesis&gt;=6.155.7",
+    "mutmut&gt;=3.6.0",
+    "pytest&gt;=9.1.1",
+    "pytest-cov&gt;=7.1.0",
+]
+```
+
+### 2. Test setup
+
+- **Unit tests:** `uv run pytest tests/` — pytest with coverage, hypothesis property tests, architecture boundary checks
+- **Acceptance tests:** `./acceptance/run_acceptance.sh` — custom Gherkin runner using `gherkin-parser` + `gherkin-mutator` CLI tools + `uv run python`; covers 4 feature domains (complexity, discovery, coverage, report); includes QA end-to-end suite + Gherkin soft mutation
+- No `Makefile` or task runner beyond the shell script
+
+### 3. Existing CI
+
+**None** — no `.github/workflows/` directory exists.
+
+### 4. Package structure
+
+- **src layout:** `src/crap4py/` — hatchling configured to build from there
+- Entry point: `crap4py.__main__:main` → installed as `crap4py` CLI
+- Modules: `__init__`, `__main__`, `_crap.py`, `_discovery_io.py`, `_format.py`, `_report.py`, `complexity.py`, `coverage.py`, `discovery.py`
+
+### 5. Release tooling
+
+**None** — no CHANGELOG, no bumpversion/bump2version, no `release.sh`. Version is hardcoded as `"0.1.0"` in `pyproject.toml`.
+
+### 6. What the tool does
+
+`crap4py` is a CLI that computes **CRAP score** (Change Risk Anti-Pattern = `CC² × (1−coverage)³ + CC`) per function for Python source files. Takes source paths + LCOV branch-coverage file as input; outputs a sorted fixed-width report. Optional `--max-crap N` CI gate (non-zero exit if any function exceeds threshold). Optional `--max-workers N` for parallelism. Pure Python, no external dependencies at runtime.
+
+### Key constraint for release
+
+The `gherkin-parser` and `gherkin-mutator` CLI tools are used in acceptance tests but are **not listed** anywhere in pyproject.toml — they must be external tools installed separately. This affects CI setup (they need to be available in the runner).</result>
+<usage><subagent_tokens>35338</subagent_tokens><tool_uses>8</tool_uses><duration_ms>34933</duration_ms></usage>
+</task-notification>
+
+---
+
+We are missing drywall, we need hashed versions for each action. Any other static check gherkin-parser check in ../drywall github actions about how do we use it. version strategy chose on your own. PyPI what do we need to do?
+
+---
+
+drywall any limit/thurshold?
+
+---
+
+approve,whats missing? pypy? anything else?
+
+---
+
+gherkin tools are not run in drywall CI? i've already created pypi account
