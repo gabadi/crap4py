@@ -7,6 +7,7 @@ All functions that produce CWD-relative output accept an explicit ``root``
 parameter (defaulting to the actual cwd) so callers can be tested without
 ``os.chdir``.
 """
+
 import fnmatch
 import os
 
@@ -51,10 +52,7 @@ def collect_source_files(paths: list[str], root: str | None = None) -> list[str]
 def _walk_dir(dir_root: str, patterns: list[str], cwd: str) -> list[str]:
     files: list[str] = []
     for dirpath, dirnames, filenames in os.walk(dir_root):
-        dirnames[:] = sorted(
-            d for d in dirnames
-            if not _is_gitignored(os.path.join(dirpath, d), patterns, cwd)
-        )
+        dirnames[:] = sorted(d for d in dirnames if not _is_gitignored(os.path.join(dirpath, d), patterns, cwd))
         accepted = [
             os.path.join(dirpath, fname)
             for fname in sorted(filenames)
@@ -69,11 +67,7 @@ def _load_gitignore_patterns(cwd: str) -> list[str]:
     if not os.path.isfile(gitignore_path):
         return []
     with open(gitignore_path) as f:
-        return [
-            line.rstrip("\n")
-            for line in f
-            if line.rstrip("\n") and not line.startswith("#")
-        ]
+        return [line.rstrip("\n") for line in f if line.rstrip("\n") and not line.startswith("#")]
 
 
 def _is_gitignored(path: str, patterns: list[str], cwd: str) -> bool:
@@ -95,6 +89,4 @@ def _match_path_pattern(rel: str, pat: str) -> bool:
 
 
 def _match_name_pattern(rel: str, name: str, pat: str) -> bool:
-    return fnmatch.fnmatch(name, pat) or any(
-        fnmatch.fnmatch(part, pat) for part in rel.split("/")
-    )
+    return fnmatch.fnmatch(name, pat) or any(fnmatch.fnmatch(part, pat) for part in rel.split("/"))

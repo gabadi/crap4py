@@ -3,11 +3,10 @@
 These tests kill surviving mutants from the hardender's mutation run.
 They are kept separate from unit tests per swarmforge engineering rules.
 """
+
 import ast
 import os
 import textwrap
-
-import pytest
 
 from crap4py._discovery_io import (
     _fnmatch_path,
@@ -18,7 +17,6 @@ from crap4py._discovery_io import (
     _walk_dir,
     collect_source_files,
     read_source,
-    relative_label,
 )
 from crap4py.discovery import FunctionEntry, _extract_entries, discover_functions
 
@@ -33,6 +31,7 @@ def names(entries: list[FunctionEntry]) -> list[str]:
 
 
 # --- discover_functions guard: each adapter arm is individually optional ---
+
 
 def test_discover_functions_only_collect_files_missing(tmp_path):
     """Guard condition: pass read_source and file_label, omit collect_files."""
@@ -100,6 +99,7 @@ def test_discover_functions_only_file_label_missing(tmp_path):
 
 # --- file_label captures root, not None ---
 
+
 def test_file_label_uses_root_not_cwd(tmp_path):
     """root must be passed into _label_fn, not None/dropped."""
     sub = tmp_path / "project" / "src"
@@ -131,6 +131,7 @@ def test_file_label_root_differs_from_cwd(tmp_path):
 
 # --- label is propagated, not replaced with None ---
 
+
 def test_file_label_appears_in_entry(tmp_path):
     """label=file_label(filepath), not None, must reach FunctionEntry.module_label."""
     fp = str(tmp_path / "mod.py")
@@ -151,6 +152,7 @@ def test_file_label_appears_in_entry(tmp_path):
 # ast.parse with filename= doesn't affect result for valid source;
 # the meaningful check is that entries come back correctly:
 
+
 def test_ast_parse_returns_entries_for_valid_source(tmp_path):
     """Sanity: entries are produced (killing mutmut_34 indirectly via label check)."""
     fp = str(tmp_path / "mod.py")
@@ -160,6 +162,7 @@ def test_ast_parse_returns_entries_for_valid_source(tmp_path):
 
 
 # --- _extract_entries passes module_label through, not None ---
+
 
 def test_extract_entries_module_label_propagated_to_nested():
     """module_label must reach nested function entries, not become None."""
@@ -202,6 +205,7 @@ def test_collect_scope_propagates_module_label_through_class():
 
 # --- read_source encoding: "utf-8" must be preserved ---
 
+
 def test_read_source_reads_utf8_content(tmp_path):
     """read_source must decode utf-8 correctly (kills encoding=None/empty mutants)."""
     fp = str(tmp_path / "mod.py")
@@ -216,6 +220,7 @@ def test_read_source_returns_none_on_missing_file(tmp_path):
 
 
 # --- collect_source_files passes cwd through to gitignore check ---
+
 
 def test_collect_source_files_cwd_matters_for_gitignore(tmp_path):
     """When root= is explicit, gitignore is loaded relative to root, not os.getcwd()."""
@@ -233,6 +238,7 @@ def test_collect_source_files_no_gitignore_includes_file(tmp_path):
 
 
 # --- _walk_dir must use os.path.join(dirpath, d), not just d ---
+
 
 def test_walk_dir_uses_full_dir_path_for_gitignore(tmp_path):
     """_walk_dir must pass os.path.join(dirpath, d) to gitignore, not just d."""
@@ -257,6 +263,7 @@ def test_walk_dir_empty_dir_returns_empty(tmp_path):
 
 
 # --- _load_gitignore_patterns filtering ---
+
 
 def test_load_gitignore_strips_trailing_newline(tmp_path):
     (tmp_path / ".gitignore").write_text("build/\n*.pyc\n")
@@ -311,6 +318,7 @@ def test_load_gitignore_reads_correct_filename(tmp_path):
 
 # --- _is_gitignored: backslash replacement ---
 
+
 def test_is_gitignored_basic_match(tmp_path):
     """Baseline: a matching pattern ignores the file."""
     fp = str(tmp_path / "build" / "out.py")
@@ -327,6 +335,7 @@ def test_is_gitignored_non_matching_not_ignored(tmp_path):
 
 
 # --- _fnmatch_path: lstrip("/") on path patterns with leading slash ---
+
 
 def test_fnmatch_path_leading_slash_stripped(tmp_path):
     """Pattern /src/lib.py: lstrip('/') must produce src/lib.py."""
@@ -346,6 +355,7 @@ def test_fnmatch_path_leading_slash_vs_rstrip(tmp_path):
 
 
 # --- _match_path_pattern: or logic, not and ---
+
 
 def test_match_path_pattern_fnmatch_hit(tmp_path):
     """fnmatch.fnmatch wins: src/*.py matches src/mod.py."""
@@ -380,6 +390,7 @@ def test_match_path_pattern_slash_suffix(tmp_path):
 
 # --- _match_name_pattern: or, not and; split on "/" not None ---
 
+
 def test_match_name_pattern_name_hit(tmp_path):
     """fnmatch(name, pat) alone triggers return True."""
     assert _match_name_pattern("src/mod.py", "mod.py", "mod.py")
@@ -408,6 +419,7 @@ def test_match_name_pattern_deep_path_component(tmp_path):
 
 
 # --- _load_gitignore_patterns: rstrip value vs rstrip(None) ---
+
 
 def test_load_gitignore_trailing_spaces_preserved_in_pattern(tmp_path):
     """rstrip('\\n') preserves trailing spaces; rstrip(None) strips them.
@@ -446,6 +458,7 @@ def test_load_gitignore_X_suffix_pattern_preserved(tmp_path):
 
 
 # --- _fnmatch_path: lstrip('/') vs lstrip('XX/XX') ---
+
 
 def test_fnmatch_path_X_prefix_pattern_not_stripped(tmp_path):
     """Pattern '/Xsrc/lib.py': lstrip('/') → 'Xsrc/lib.py' (correct, path has '/').

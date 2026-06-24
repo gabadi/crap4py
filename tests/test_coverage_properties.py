@@ -2,9 +2,11 @@
 
 Run separately: uv run pytest tests/test_coverage_properties.py
 """
-from hypothesis import given, assume
+
+from hypothesis import given
 from hypothesis import strategies as st
-from crap4py.coverage import resolve_coverage, parse_lcov, NA
+
+from crap4py.coverage import NA, resolve_coverage
 
 _BRDA_RECORD = st.tuples(
     st.integers(min_value=1, max_value=1000),

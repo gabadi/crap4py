@@ -14,13 +14,23 @@ Two rules enforced here:
 IO adapter modules (*_io.py) and entrypoints (__main__.py) are excluded from
 both checks — they are the intentional IO boundary.
 """
+
 import ast
 import pathlib
 
 _CORE_DIR = pathlib.Path(__file__).parent.parent / "src" / "crap4py"
 _FORBIDDEN_STDLIB = {
-    "os", "sys", "pathlib", "subprocess", "socket",
-    "urllib", "http", "requests", "click", "typer", "argparse",
+    "os",
+    "sys",
+    "pathlib",
+    "subprocess",
+    "socket",
+    "urllib",
+    "http",
+    "requests",
+    "click",
+    "typer",
+    "argparse",
 }
 _IO_BOUNDARY_SUFFIXES = ("_io.py", "__main__.py")
 _PACKAGE = "crap4py"
@@ -82,11 +92,8 @@ def test_core_does_not_import_io_adapters_at_module_scope():
             if isinstance(node, ast.ImportFrom) and node.module:
                 parts = node.module.split(".")
                 if parts[0] == _PACKAGE and len(parts) > 1 and parts[-1].endswith("_io"):
-                    violations.append(
-                        f"{py_file.relative_to(_CORE_DIR)}: top-level import of {node.module}"
-                    )
+                    violations.append(f"{py_file.relative_to(_CORE_DIR)}: top-level import of {node.module}")
     assert not violations, (
         "Core modules must not import IO adapters at module scope "
-        "(dependency direction: IO adapters depend on core, not vice-versa):\n"
-        + "\n".join(violations)
+        "(dependency direction: IO adapters depend on core, not vice-versa):\n" + "\n".join(violations)
     )

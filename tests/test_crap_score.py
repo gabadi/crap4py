@@ -1,17 +1,20 @@
 """Unit tests for C4 CRAP score, sort, and report format logic."""
-import sys
+
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 import pytest
-from crap4py.coverage import NA
-from crap4py._crap import crap_score, sort_rows, ReportRow
-from crap4py._format import format_report
 
+from crap4py._crap import ReportRow, crap_score, sort_rows
+from crap4py._format import format_report
+from crap4py.coverage import NA
 
 # ---------------------------------------------------------------------------
 # crap_score
 # ---------------------------------------------------------------------------
+
 
 def test_crap_score_cc4_cov075():
     # CC=4, coverage=0.75 → 4²*(1-0.75)³ + 4 = 16*0.015625 + 4 = 0.25+4 = 4.25 → 4.2 rounded
@@ -40,6 +43,7 @@ def test_crap_score_cc2_cov05():
 # ---------------------------------------------------------------------------
 # ReportRow
 # ---------------------------------------------------------------------------
+
 
 def test_report_row_fields():
     row = ReportRow("foo", "src/foo.py", 2, 0.5)
@@ -94,6 +98,7 @@ def test_report_row_crap_str_one_decimal():
 # sort_rows
 # ---------------------------------------------------------------------------
 
+
 def _make_rows(specs: list[tuple[str, float | object]]) -> list[ReportRow]:
     return [ReportRow(name, "m.py", 1, cov) for name, cov in specs]
 
@@ -130,10 +135,10 @@ def test_sort_rows_two_na_stable_by_name():
 def test_sort_rows_full_ordering():
     # charlie(crap=30.0), alpha(4.2), delta(4.2), bravo(N/A), echo(N/A)
     rows = [
-        ReportRow("alpha", "m.py", 4, 0.75),    # crap=4.25
+        ReportRow("alpha", "m.py", 4, 0.75),  # crap=4.25
         ReportRow("bravo", "m.py", 1, NA),
-        ReportRow("charlie", "m.py", 5, 0.0),   # crap=30.0
-        ReportRow("delta", "m.py", 4, 0.75),    # crap=4.25
+        ReportRow("charlie", "m.py", 5, 0.0),  # crap=30.0
+        ReportRow("delta", "m.py", 4, 0.75),  # crap=4.25
         ReportRow("echo", "m.py", 1, NA),
     ]
     sorted_rows = sort_rows(rows)
@@ -144,6 +149,7 @@ def test_sort_rows_full_ordering():
 # ---------------------------------------------------------------------------
 # format_report
 # ---------------------------------------------------------------------------
+
 
 def test_format_report_first_line_is_crap_report():
     rows = [ReportRow("foo", "src/foo.py", 1, 1.0)]

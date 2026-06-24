@@ -2,6 +2,7 @@
 
 Implements the radon expression-aware model per ADR 0001.
 """
+
 import ast
 from dataclasses import dataclass
 
@@ -19,6 +20,7 @@ def cyclomatic_complexity(source: str) -> list[FunctionCC]:
 
 
 # --- Traversal layer ---
+
 
 def _collect_from_scope(scope: ast.AST) -> list[FunctionCC]:
     """Walk direct children of a scope, collecting FunctionCC entries."""

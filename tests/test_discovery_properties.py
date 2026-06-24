@@ -2,13 +2,15 @@
 
 Run separately: uv run pytest tests/test_discovery_properties.py
 """
+
 import ast
 import keyword
 import textwrap
-from hypothesis import given, assume, settings
-from hypothesis import strategies as st
-from crap4py.discovery import FunctionEntry, _extract_entries
 
+from hypothesis import assume, given
+from hypothesis import strategies as st
+
+from crap4py.discovery import _extract_entries
 
 # --- Source generators ---
 
@@ -32,6 +34,7 @@ def _parse(source: str) -> ast.AST:
 
 
 # --- Properties ---
+
 
 @given(st.lists(_VALID_NAME, min_size=1, max_size=10, unique=True))
 def test_entry_count_matches_function_count(names):
@@ -106,11 +109,7 @@ def test_empty_source_or_no_functions(names):
 def test_nested_function_appears_as_separate_entry(outer, inner):
     """A nested def produces its own entry named by its own def name (not qualified by enclosing function)."""
     assume(outer != inner)
-    source = (
-        f"def {outer}():\n"
-        f"    def {inner}():\n"
-        f"        pass\n"
-    )
+    source = f"def {outer}():\n    def {inner}():\n        pass\n"
     entries = _extract_entries(_parse(source), "nested.py")
     names = [e.qualified_name for e in entries]
     assert outer in names

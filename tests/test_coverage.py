@@ -3,16 +3,20 @@
 Tests the pure coverage resolution logic: LCOV parsing and per-function
 branch-coverage computation.
 """
-import sys
+
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 import pytest
-from crap4py.coverage import resolve_coverage, parse_lcov, NA
+
+from crap4py.coverage import NA, parse_lcov, resolve_coverage
 
 # ---------------------------------------------------------------------------
 # parse_lcov
 # ---------------------------------------------------------------------------
+
 
 def _make_lcov(sf: str, brda_lines: list[str]) -> str:
     lines = ["TN:", f"SF:{sf}"]
@@ -62,8 +66,16 @@ def test_parse_lcov_taken_positive_int():
 def test_parse_lcov_ignores_non_brda_records():
     lcov = _make_lcov(
         "src/foo.py",
-        ["DA:5,1", "FN:5,foo", "FNDA:1,foo", "LF:1", "LH:1", "BRF:1", "BRH:1",
-         "BRDA:5,0,0,1"]
+        [
+            "DA:5,1",
+            "FN:5,foo",
+            "FNDA:1,foo",
+            "LF:1",
+            "LH:1",
+            "BRF:1",
+            "BRH:1",
+            "BRDA:5,0,0,1",
+        ],
     )
     result = parse_lcov(lcov)
     records = result["src/foo.py"]
@@ -71,10 +83,7 @@ def test_parse_lcov_ignores_non_brda_records():
 
 
 def test_parse_lcov_multiple_sf_blocks():
-    lcov = (
-        "TN:\nSF:src/a.py\nBRDA:5,0,0,1\nend_of_record\n"
-        "TN:\nSF:src/b.py\nBRDA:10,0,0,0\nend_of_record\n"
-    )
+    lcov = "TN:\nSF:src/a.py\nBRDA:5,0,0,1\nend_of_record\nTN:\nSF:src/b.py\nBRDA:10,0,0,0\nend_of_record\n"
     result = parse_lcov(lcov)
     assert "src/a.py" in result
     assert "src/b.py" in result
@@ -90,6 +99,7 @@ def test_parse_lcov_textual_branch_id():
 # ---------------------------------------------------------------------------
 # resolve_coverage
 # ---------------------------------------------------------------------------
+
 
 def _make_brda_records(entries: list[tuple[int, int]]) -> dict:
     """entries: [(line, taken), ...] → simple LCOV dict for sf."""
@@ -159,12 +169,14 @@ def test_coverage_suffix_matching_relative_sf():
 
 
 def test_coverage_only_in_range_brda_counted():
-    lcov_data = {"src/foo.py": [
-        (1, "0", 0),   # in range [5,10] — no
-        (5, "1", 1),   # in range — yes
-        (10, "2", 0),  # in range — yes (uncovered)
-        (11, "3", 1),  # out of range — ignored
-    ]}
+    lcov_data = {
+        "src/foo.py": [
+            (1, "0", 0),  # in range [5,10] — no
+            (5, "1", 1),  # in range — yes
+            (10, "2", 0),  # in range — yes (uncovered)
+            (11, "3", 1),  # out of range — ignored
+        ]
+    }
     cov = resolve_coverage("src/foo.py", (5, 10), lcov_data)
     assert cov == pytest.approx(0.5)
 
@@ -190,6 +202,7 @@ def test_na_repr_function():
 
 def test_na_singleton_returns_same_instance():
     from crap4py.coverage import _NA
+
     a = _NA()
     b = _NA()
     assert a is b
@@ -212,6 +225,7 @@ def test_parse_lcov_brda_with_fewer_than_4_parts_is_skipped():
 
 def test_match_sf_exact_path_without_prefix():
     from crap4py.coverage import _match_sf
+
     lcov_data = {"src/foo.py": [(1, "0", 1)]}
     records = _match_sf("src/foo.py", lcov_data)
     assert records is not None
@@ -225,6 +239,7 @@ def test_coverage_windows_path_normalisation():
 
 
 # --- mutant-killing tests ---
+
 
 def test_parse_brda_split_on_comma_not_other_separator():
     # mutmut_5: split(",",) removes maxsplit — but "taken" field may contain commas
@@ -258,6 +273,7 @@ def test_parse_brda_split_maxsplit_3_not_4():
 def test_lcov_parse_state_current_records_starts_as_list():
     # mutmut_3: __init__ sets current_records = None instead of []
     from crap4py.coverage import _LcovParseState
+
     state = _LcovParseState()
     assert state.current_records == []
     state.on_brda("BRDA:5,0,0,1")  # would fail if current_records is None
@@ -267,6 +283,7 @@ def test_lcov_parse_state_current_records_starts_as_list():
 def test_on_end_of_record_clears_current_sf_to_none_not_empty_string():
     # mutmut_3: on_end_of_record sets current_sf = "" instead of None
     from crap4py.coverage import _LcovParseState
+
     state = _LcovParseState()
     state.on_sf("src/foo.py")
     state.on_end_of_record()
@@ -279,6 +296,7 @@ def test_on_end_of_record_clears_current_sf_to_none_not_empty_string():
 def test_on_end_of_record_resets_current_records_to_list_not_none():
     # mutmut_4: on_end_of_record sets current_records = None instead of []
     from crap4py.coverage import _LcovParseState
+
     state = _LcovParseState()
     state.on_sf("src/a.py")
     state.on_brda("BRDA:5,0,0,1")
@@ -302,6 +320,7 @@ def test_parse_lcov_brda_requires_active_sf_and_not_or():
 def test_match_sf_windows_backslash_in_source_path():
     # mutmut_7: replace("XX\\XX", "/") — source path with backslash not normalized
     from crap4py.coverage import _match_sf
+
     lcov_data = {"/abs/proj/src/foo.py": [(1, "0", 1)]}
     records = _match_sf("src\\foo.py", lcov_data)
     assert records is not None
@@ -310,6 +329,7 @@ def test_match_sf_windows_backslash_in_source_path():
 def test_match_sf_windows_replacement_target_is_forward_slash():
     # mutmut_8: replace("\\", "XX/XX") — normalization produces wrong separator
     from crap4py.coverage import _match_sf
+
     lcov_data = {"src/foo.py": [(1, "0", 1)]}
     records = _match_sf("src\\foo.py", lcov_data)
     assert records is not None

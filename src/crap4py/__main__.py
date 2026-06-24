@@ -6,9 +6,10 @@ Usage: uv run crap4py --lcov <lcov_file> [--max-crap N] [--max-workers N]
 All report logic lives in crap4py._report; this module handles argument
 parsing, filesystem error checking, and printing only.
 """
+
 import argparse
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
@@ -68,14 +69,15 @@ def _resolve_workers(raw: str | None) -> None:
 
 def _check_crap_gate(rows: list, max_crap: float) -> None:
     from crap4py.coverage import NA
+
     for row in rows:
         if row.crap is not NA and float(row.crap) > max_crap:
             sys.exit(1)
 
 
 def main(argv: list[str] | None = None) -> None:
-    from crap4py._report import build_report
     from crap4py._format import format_report
+    from crap4py._report import build_report
 
     args = _parse_args(argv)
     _resolve_workers(args.max_workers)

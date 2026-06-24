@@ -1,11 +1,13 @@
 """Unit tests for crap4py._report (C4 pipeline: discover → score → CRAP rows)."""
-import sys
+
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 import pytest
+
 from crap4py._report import build_report
-from crap4py._crap import ReportRow
 from crap4py.coverage import NA
 
 # ---------------------------------------------------------------------------
@@ -30,6 +32,7 @@ def branchy(x):
 # build_report
 # ---------------------------------------------------------------------------
 
+
 def test_build_report_empty_paths(tmp_path):
     lcov_file = tmp_path / "coverage.lcov"
     lcov_file.write_text("TN:\nSF:src/foo.py\nend_of_record\n")
@@ -41,6 +44,7 @@ def test_build_report_single_function_full_coverage(tmp_path):
     src_file = tmp_path / "foo.py"
     src_file.write_text(_SIMPLE_SOURCE)
     from crap4py.discovery import discover_functions
+
     entries = discover_functions([str(tmp_path)])
     label = entries[0].module_label
     lcov_file = tmp_path / "coverage.lcov"
@@ -69,17 +73,11 @@ def test_build_report_fraction_coverage(tmp_path):
     src_file = tmp_path / "foo.py"
     src_file.write_text(_COMPLEX_SOURCE)
     from crap4py.discovery import discover_functions
+
     entries = discover_functions([str(tmp_path)])
     label = entries[0].module_label
     lcov_file = tmp_path / "coverage.lcov"
-    lcov_file.write_text(
-        f"TN:\nSF:{label}\n"
-        "BRDA:2,0,0,1\n"
-        "BRDA:2,0,1,0\n"
-        "BRDA:4,0,0,0\n"
-        "BRDA:4,0,1,0\n"
-        "end_of_record\n"
-    )
+    lcov_file.write_text(f"TN:\nSF:{label}\nBRDA:2,0,0,1\nBRDA:2,0,1,0\nBRDA:4,0,0,0\nBRDA:4,0,1,0\nend_of_record\n")
     rows = build_report(str(lcov_file), [str(tmp_path)])
     assert len(rows) == 1
     row = rows[0]
@@ -169,13 +167,7 @@ def test_build_report_continue_skips_only_failed_file(tmp_path):
 
 
 def test_build_report_bare_name_uses_last_component(tmp_path):
-    source = (
-        "class Outer:\n"
-        "    class Inner:\n"
-        "        def method(self):\n"
-        "            if True:\n"
-        "                pass\n"
-    )
+    source = "class Outer:\n    class Inner:\n        def method(self):\n            if True:\n                pass\n"
     src_file = tmp_path / "thing.py"
     src_file.write_text(source)
     lcov_file = tmp_path / "coverage.lcov"
@@ -191,6 +183,7 @@ def test_build_report_default_cc_is_1_when_name_not_found(tmp_path):
     src_file = tmp_path / "foo.py"
     src_file.write_text(source)
     from crap4py.discovery import discover_functions
+
     entries = discover_functions([str(tmp_path)])
     label = entries[0].module_label
     lcov_file = tmp_path / "coverage.lcov"
@@ -212,6 +205,7 @@ def test_build_report_qualified_name_uses_dot_separator(tmp_path):
     src_file = tmp_path / "mod.py"
     src_file.write_text(source)
     from crap4py.discovery import discover_functions
+
     entries = discover_functions([str(tmp_path)])
     assert any(e.qualified_name == "Foo.bar" for e in entries)
     for e in entries:

@@ -2,10 +2,12 @@
 
 Pure functions: no IO, no CLI concerns. Consumed by _format.py and __main__.py.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from crap4py.coverage import NA, _NA
+
+from crap4py.coverage import _NA, NA
 
 
 def crap_score(cc: int, coverage: float | _NA) -> float | _NA:

@@ -7,11 +7,13 @@ Coverage = (# in-range BRDA with taken >= 1) / (# in-range BRDA).
 A function with zero in-range BRDA records is 100% covered (1.0).
 Coverage is N/A when the function's source file has no matching SF record.
 """
+
 from __future__ import annotations
 
 
 class _NA:
     """Sentinel for indeterminate (file-absent) coverage."""
+
     _instance: "_NA | None" = None
 
     def __new__(cls) -> "_NA":
@@ -49,6 +51,7 @@ def _parse_brda(line: str) -> "_BrdaRecord | None":
 
 class _LcovParseState:
     """Mutable state carrier for the LCOV line-by-line parser."""
+
     def __init__(self) -> None:
         self.result: LcovData = {}
         self.current_sf: str | None = None

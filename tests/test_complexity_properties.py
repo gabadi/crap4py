@@ -2,9 +2,12 @@
 
 Run separately: uv run pytest tests/test_complexity_properties.py
 """
+
 import keyword
-from hypothesis import given, assume
+
+from hypothesis import given
 from hypothesis import strategies as st
+
 from crap4py.complexity import cyclomatic_complexity
 
 # --- Source generators ---
@@ -30,6 +33,7 @@ def _function(name: str, body_lines: list[str]) -> str:
 
 
 # --- Properties ---
+
 
 @given(
     body=st.sampled_from(_SIMPLE_BODIES),
@@ -68,18 +72,12 @@ def test_nested_function_decision_points_do_not_affect_outer_cc(outer_body, inne
 
     inner_lines = inner_extra
     inner_body = "\n        ".join(inner_lines) if inner_lines else "pass"
-    with_nested = (
-        f"def outer():\n"
-        f"    {outer_body}\n"
-        f"    def inner():\n"
-        f"        {inner_body}\n"
-    )
+    with_nested = f"def outer():\n    {outer_body}\n    def inner():\n        {inner_body}\n"
     results = {r.name: r.cc for r in cyclomatic_complexity(with_nested)}
     assert "outer" in results
     assert "inner" in results
     assert results["outer"] == outer_cc_alone, (
-        f"outer CC changed from {outer_cc_alone} to {results['outer']} "
-        "when nested function decision points were added"
+        f"outer CC changed from {outer_cc_alone} to {results['outer']} when nested function decision points were added"
     )
 
 

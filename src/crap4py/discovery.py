@@ -12,6 +12,7 @@ the real filesystem adapters from ``_discovery_io`` are used as defaults —
 this single inward call is the only cross-boundary touch in this module, and
 it is deferred to call time so tests can inject stubs without importing IO.
 """
+
 import ast
 from dataclasses import dataclass
 from typing import Callable
@@ -24,7 +25,9 @@ class FunctionEntry:
     line_range: tuple[int, int]
 
 
-def _io_defaults(root: str | None) -> tuple[
+def _io_defaults(
+    root: str | None,
+) -> tuple[
     Callable[[list[str]], list[str]],
     Callable[[str], str | None],
     Callable[[str], str],
@@ -32,9 +35,14 @@ def _io_defaults(root: str | None) -> tuple[
     """Load and return the default filesystem IO adapters from _discovery_io."""
     from crap4py._discovery_io import (
         collect_source_files as _collect_all,
+    )
+    from crap4py._discovery_io import (
         read_source as _read,
+    )
+    from crap4py._discovery_io import (
         relative_label as _label_fn,
     )
+
     return (
         lambda ps: _collect_all(ps, root),
         _read,
@@ -61,7 +69,11 @@ def _resolve_adapters(
     return resolved  # type: ignore[return-value]
 
 
-def _parse_file(filepath: str, read_source: Callable[[str], str | None], file_label: Callable[[str], str]) -> list[FunctionEntry]:
+def _parse_file(
+    filepath: str,
+    read_source: Callable[[str], str | None],
+    file_label: Callable[[str], str],
+) -> list[FunctionEntry]:
     """Parse one source file and return its function entries, skipping on read/parse error."""
     source = read_source(filepath)
     if source is None:

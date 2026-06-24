@@ -3,14 +3,15 @@
 This module owns the data pipeline. It is fully testable without filesystem
 side-effects beyond what the injected IO callables do.
 """
+
 from __future__ import annotations
 
 from typing import Callable
 
-from crap4py.discovery import discover_functions, FunctionEntry
-from crap4py.complexity import cyclomatic_complexity
-from crap4py.coverage import parse_lcov, resolve_coverage, NA, LcovData
 from crap4py._crap import ReportRow, sort_rows
+from crap4py.complexity import cyclomatic_complexity
+from crap4py.coverage import LcovData, parse_lcov, resolve_coverage
+from crap4py.discovery import FunctionEntry, discover_functions
 
 
 def _default_open(p: str) -> str:
@@ -18,9 +19,7 @@ def _default_open(p: str) -> str:
         return f.read()
 
 
-def _filter_by_fragments(
-    entries: list[FunctionEntry], fragments: list[str]
-) -> list[FunctionEntry]:
+def _filter_by_fragments(entries: list[FunctionEntry], fragments: list[str]) -> list[FunctionEntry]:
     return [e for e in entries if any(frag in e.module_label for frag in fragments)]
 
 
