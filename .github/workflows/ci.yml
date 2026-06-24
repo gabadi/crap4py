@@ -23,6 +23,12 @@ jobs:
         run: uv run ruff format --check src/ tests/
       - name: Tests
         run: uv run pytest --cov --cov-report=lcov:lcov.info --cov-report=term-missing --cov-fail-under=90
+      - name: Install lcov
+        run: sudo apt-get install -y lcov
+        if: always()
+      - name: Install lcov
+        run: sudo apt-get install -y lcov
+        if: always()
       - name: Coverage report
         uses: zgosalvez/github-actions-report-lcov@84f16a83ae03e846a4c697bd75cae3f94fa9f426 # v7.0.12
         if: always()

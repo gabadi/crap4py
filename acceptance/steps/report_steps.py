@@ -26,6 +26,9 @@ class Context:
         self.cli_stdout: str = ""
         self.cli_stderr: str = ""
         self.serial_output: str = ""
+        self._tmp_root: str = ""
+        self._tmp_lcov: str = ""
+        self._json_data: dict = {}
 
 
 ctx = Context()
@@ -377,3 +380,64 @@ def then_error_about_max_workers(m, params):
     assert "max-workers" in combined.lower() or "workers" in combined.lower(), (
         f"Expected --max-workers mention, got:\n{combined}"
     )
+
+
+# ---------------------------------------------------------------------------
+# report-13 / report-14: --format json
+# ---------------------------------------------------------------------------
+
+@step(r"a temporary source file with one function and an empty LCOV")
+def given_temp_source_with_empty_lcov(m, params):
+    import tempfile
+    tmp = tempfile.mkdtemp()
+    src = os.path.join(tmp, "fn.py")
+    with open(src, "w") as f:
+        f.write("def fn(): pass\n")
+    lcov = os.path.join(tmp, "empty.lcov")
+    with open(lcov, "w") as f:
+        f.write("TN:\nend_of_record\n")
+    ctx._tmp_root = tmp
+    ctx._tmp_lcov = lcov
+
+
+@step(r"the command runs with \"--format json\"")
+def when_format_json(m, params):
+    ctx.cli_exit_code, ctx.cli_stdout, ctx.cli_stderr = _run_cli_argv(
+        ["--lcov", ctx._tmp_lcov, "--format", "json", ctx._tmp_root]
+    )
+
+
+@step(r"the output is valid JSON")
+def then_output_is_valid_json(m, params):
+    import json
+    try:
+        ctx._json_data = json.loads(ctx.cli_stdout)
+    except json.JSONDecodeError as e:
+        raise AssertionError(f"Output is not valid JSON: {e}\nOutput:\n{ctx.cli_stdout}")
+
+
+@step(r"the JSON output has a \"functions\" array and a \"summary\" object")
+def then_json_has_functions_and_summary(m, params):
+    data = ctx._json_data
+    assert "functions" in data, f"Missing 'functions' key in: {data}"
+    assert isinstance(data["functions"], list), f"'functions' is not a list: {data['functions']!r}"
+    assert "summary" in data, f"Missing 'summary' key in: {data}"
+    assert isinstance(data["summary"], dict), f"'summary' is not a dict: {data['summary']!r}"
+
+
+@step(r"the JSON function entry has \"coverage\" as null")
+def then_json_entry_null_coverage(m, params):
+    import json
+    try:
+        ctx._json_data = json.loads(ctx.cli_stdout)
+    except json.JSONDecodeError as e:
+        raise AssertionError(f"Output is not valid JSON: {e}\nOutput:\n{ctx.cli_stdout}")
+    assert ctx._json_data["functions"], "Expected at least one function entry"
+    fn = ctx._json_data["functions"][0]
+    assert fn["coverage"] is None, f"Expected coverage null, got {fn['coverage']!r}"
+
+
+@step(r"the JSON function entry has \"crap\" as null")
+def then_json_entry_null_crap(m, params):
+    fn = ctx._json_data["functions"][0]
+    assert fn["crap"] is None, f"Expected crap null, got {fn['crap']!r}"

@@ -72,6 +72,8 @@ def _load_gitignore_patterns(cwd: str) -> list[str]:
 
 def _is_gitignored(path: str, patterns: list[str], cwd: str) -> bool:
     rel = os.path.relpath(path, cwd)
+    if rel.startswith(".."):
+        return False
     rel_fwd = rel.replace("\\", "/")
     name = os.path.basename(path)
     return any(_fnmatch_path(rel_fwd, name, pattern) for pattern in patterns)
