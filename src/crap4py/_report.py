@@ -97,5 +97,8 @@ def build_report(
     if fragments:
         entries = _filter_by_fragments(entries, fragments)
     groups = _group_by_module(entries)
-    all_rows = _parallel_rows(groups, lcov_data, open_fn, max_workers) if _should_parallelize(groups, max_workers) else _serial_rows(groups, lcov_data, open_fn)
+    if _should_parallelize(groups, max_workers):
+        all_rows = _parallel_rows(groups, lcov_data, open_fn, max_workers)
+    else:
+        all_rows = _serial_rows(groups, lcov_data, open_fn)
     return sort_rows(all_rows)
