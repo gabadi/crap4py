@@ -19,6 +19,10 @@ Feature: CRAP report command
   #                          files whose path contains a fragment are analysed.
   #     --max-crap N       — optional CI gate (see CONSTRAINTS / exit codes).
   #     --max-workers N    — optional parallelism (performance only).
+  #     --format table|json — output format (default: table). json emits a JSON
+  #                          document with a "functions" array and a "summary"
+  #                          object; N/A coverage and CRAP serialise as null.
+  #     --version          — print the installed version and exit 0.
   #     -h / --help        — print usage and exit 0.
   #   Output: a fixed-width table on stdout — a `CRAP Report` title, a `=`
   #     underline, a `Function | Module | CC | Cov% | CRAP` header, a `-`
@@ -38,6 +42,9 @@ Feature: CRAP report command
   #     strictly greater than N; N/A-CRAP rows never trip it. No default gate.
   #   - --max-workers N: performance only — output is identical to a serial run.
   #     Requires a positive integer.
+  #   - --format json: output is a JSON document {"functions": [...], "summary":
+  #     {...}}. N/A coverage and CRAP both serialise as JSON null.
+  #   - --version: prints the installed package version to stdout and exits 0.
   #   - Exit codes: 0 on a clean run (and no --max-crap breach); non-zero on a
   #     usage/IO error (bad args, omitted/missing/unreadable --lcov); non-zero on
   #     a --max-crap breach.
@@ -177,3 +184,24 @@ Feature: CRAP report command
       | value |
       | 0     |
       | abc   |
+
+  # report-13
+  Scenario: --format json produces a JSON document with functions and summary keys
+    Given a temporary source file with one function and an empty LCOV
+    When the command runs with "--format json"
+    Then the output is valid JSON
+    And the JSON output has a "functions" array and a "summary" object
+
+  # report-14
+  Scenario: --format json serialises N/A coverage and CRAP as JSON null
+    Given a temporary source file with one function and an empty LCOV
+    When the command runs with "--format json"
+    Then the JSON function entry has "coverage" as null
+    And the JSON function entry has "crap" as null
+
+  # report-15
+  Scenario: --version prints the installed version and exits zero
+    Given the command is invoked with the argument "--version"
+    When the command runs
+    Then the command exits with status "zero"
+    And it writes "usage to stdout"
