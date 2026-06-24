@@ -6,6 +6,8 @@ side-effects beyond what the injected IO callables do.
 
 from __future__ import annotations
 
+from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from typing import Callable
 
 from crap4py._crap import ReportRow, sort_rows
@@ -23,20 +25,32 @@ def _filter_by_fragments(entries: list[FunctionEntry], fragments: list[str]) -> 
     return [e for e in entries if any(frag in e.module_label for frag in fragments)]
 
 
-def _score_entry(
-    entry: FunctionEntry,
+def _group_by_module(entries: list[FunctionEntry]) -> dict[str, list[FunctionEntry]]:
+    groups: dict[str, list[FunctionEntry]] = defaultdict(list)
+    for entry in entries:
+        groups[entry.module_label].append(entry)
+    return dict(groups)
+
+
+def _score_file(
+    module_label: str,
+    entries: list[FunctionEntry],
     lcov_data: LcovData,
     open_fn: Callable[[str], str],
-) -> ReportRow | None:
+) -> list[ReportRow]:
+    """Score all functions in one file, reading and parsing the source exactly once."""
     try:
-        source_text = open_fn(entry.module_label)
+        source_text = open_fn(module_label)
     except OSError:
-        return None
+        return []
     cc_results = {r.name: r.cc for r in cyclomatic_complexity(source_text)}
-    bare_name = entry.qualified_name.rsplit(".", 1)[-1]
-    cc = cc_results.get(bare_name, 1)
-    cov = resolve_coverage(entry.module_label, entry.line_range, lcov_data)
-    return ReportRow(entry.qualified_name, entry.module_label, cc, cov)
+    rows = []
+    for entry in entries:
+        bare_name = entry.qualified_name.rsplit(".", 1)[-1]
+        cc = cc_results.get(bare_name, 1)
+        cov = resolve_coverage(module_label, entry.line_range, lcov_data)
+        rows.append(ReportRow(entry.qualified_name, entry.module_label, cc, cov))
+    return rows
 
 
 def build_report(
@@ -45,11 +59,13 @@ def build_report(
     *,
     fragments: list[str] | None = None,
     open_fn: Callable[[str], str] | None = None,
+    max_workers: int | None = None,
 ) -> list[ReportRow]:
     """Return sorted ReportRow list, one per discovered function.
 
     fragments: optional path-fragment substring filters (crap4go filterSources).
     open_fn: injectable file reader for testing.
+    max_workers: number of parallel workers for file analysis; None means serial.
     """
     if open_fn is None:
         open_fn = _default_open
@@ -60,5 +76,20 @@ def build_report(
     if fragments:
         entries = _filter_by_fragments(entries, fragments)
 
-    rows = [_score_entry(e, lcov_data, open_fn) for e in entries]
-    return sort_rows([r for r in rows if r is not None])
+    groups = _group_by_module(entries)
+
+    if max_workers is not None and max_workers > 1 and len(groups) > 1:
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = [
+                executor.submit(_score_file, label, file_entries, lcov_data, open_fn)
+                for label, file_entries in groups.items()
+            ]
+            all_rows = [row for future in futures for row in future.result()]
+    else:
+        all_rows = [
+            row
+            for label, file_entries in groups.items()
+            for row in _score_file(label, file_entries, lcov_data, open_fn)
+        ]
+
+    return sort_rows(all_rows)

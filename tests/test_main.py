@@ -232,6 +232,102 @@ def test_main_max_workers_valid_runs_normally(tmp_path, monkeypatch, capsys):
     assert "Function" in captured.out
 
 
+def test_main_version_flag_prints_version(monkeypatch, capsys):
+    monkeypatch.setattr(sys, "argv", ["crap4py", "--version"])
+    from crap4py.__main__ import main
+
+    with pytest.raises(SystemExit) as exc:
+        main()
+    assert exc.value.code == 0
+    captured = capsys.readouterr()
+    assert "crap4py" in captured.out
+
+
+def test_main_format_json_produces_valid_json(tmp_path, monkeypatch, capsys):
+    src_file = tmp_path / "foo.py"
+    src_file.write_text(_SIMPLE_SOURCE)
+    from crap4py.discovery import discover_functions
+
+    entries = discover_functions([str(tmp_path)])
+    label = entries[0].module_label
+    lcov_file = tmp_path / "coverage.lcov"
+    lcov_file.write_text(f"TN:\nSF:{label}\nBRDA:1,0,0,1\nend_of_record\n")
+    monkeypatch.setattr(sys, "argv", ["crap4py", "--lcov", str(lcov_file), "--format", "json", str(tmp_path)])
+    from crap4py.__main__ import main
+
+    import json
+
+    main()
+    captured = capsys.readouterr()
+    data = json.loads(captured.out)
+    assert "functions" in data
+    assert "summary" in data
+    assert len(data["functions"]) == 1
+    fn = data["functions"][0]
+    assert fn["name"] == "add"
+    assert fn["cc"] == 1
+    assert fn["coverage"] == pytest.approx(1.0)
+    assert fn["crap"] == pytest.approx(1.0)
+
+
+def test_main_format_json_summary_keys(tmp_path, monkeypatch, capsys):
+    src_file = tmp_path / "foo.py"
+    src_file.write_text(_SIMPLE_SOURCE)
+    lcov_file = tmp_path / "coverage.lcov"
+    lcov_file.write_text("TN:\nend_of_record\n")
+    monkeypatch.setattr(sys, "argv", ["crap4py", "--lcov", str(lcov_file), "--format", "json", str(tmp_path)])
+    from crap4py.__main__ import main
+
+    import json
+
+    main()
+    captured = capsys.readouterr()
+    summary = json.loads(captured.out)["summary"]
+    assert "totalFunctions" in summary
+    assert "indeterminateFunctions" in summary
+    assert "averageCc" in summary
+    assert "averageCrap" in summary
+    assert "worstCrap" in summary
+
+
+def test_main_format_json_na_coverage_is_null(tmp_path, monkeypatch, capsys):
+    src_file = tmp_path / "foo.py"
+    src_file.write_text(_SIMPLE_SOURCE)
+    lcov_file = tmp_path / "coverage.lcov"
+    lcov_file.write_text("TN:\nend_of_record\n")
+    monkeypatch.setattr(sys, "argv", ["crap4py", "--lcov", str(lcov_file), "--format", "json", str(tmp_path)])
+    from crap4py.__main__ import main
+
+    import json
+
+    main()
+    captured = capsys.readouterr()
+    fn = json.loads(captured.out)["functions"][0]
+    assert fn["coverage"] is None
+    assert fn["crap"] is None
+
+
+def test_main_max_workers_wired_to_build_report(tmp_path, monkeypatch, capsys):
+    lcov_file = tmp_path / "coverage.lcov"
+    lcov_file.write_text("TN:\nend_of_record\n")
+    monkeypatch.setattr(sys, "argv", ["crap4py", "--lcov", str(lcov_file), "--max-workers", "3", str(tmp_path)])
+
+    import crap4py._report as report_mod
+
+    received: list[int | None] = []
+    original_build = report_mod.build_report
+
+    def capturing_build(*args, **kwargs):
+        received.append(kwargs.get("max_workers"))
+        return original_build(*args, **kwargs)
+
+    monkeypatch.setattr(report_mod, "build_report", capturing_build)
+    from crap4py.__main__ import main
+
+    main()
+    assert received == [3]
+
+
 def test_main_max_crap_na_rows_not_counted_for_gate(tmp_path, monkeypatch, capsys):
     src_file = tmp_path / "foo.py"
     src_file.write_text(_SIMPLE_SOURCE)

@@ -200,6 +200,40 @@ def test_build_report_default_cc_is_1_when_name_not_found(tmp_path):
     assert rows[0].cc == 1
 
 
+def test_build_report_reads_each_file_once(tmp_path):
+    src_file = tmp_path / "multi.py"
+    src_file.write_text("def fn_a(): pass\ndef fn_b(): pass\ndef fn_c(): pass\n")
+    lcov_file = tmp_path / "coverage.lcov"
+    lcov_file.write_text("TN:\nend_of_record\n")
+    lcov_text = lcov_file.read_text()
+
+    source_read_counts: dict[str, int] = {}
+
+    def open_fn(path: str) -> str:
+        source_read_counts[path] = source_read_counts.get(path, 0) + 1
+        if path == str(lcov_file):
+            return lcov_text
+        with open(path) as f:
+            return f.read()
+
+    rows = build_report(str(lcov_file), [str(tmp_path)], open_fn=open_fn)
+    assert len(rows) == 3
+    # 1 read for lcov + 1 for the source file (not 3 per-function reads)
+    assert sum(source_read_counts.values()) == 2
+
+
+def test_build_report_parallel_gives_same_result_as_serial(tmp_path):
+    for name in ["aaa.py", "bbb.py", "ccc.py"]:
+        (tmp_path / name).write_text(f"def fn_{name[:-3]}(): pass\n")
+    lcov_file = tmp_path / "coverage.lcov"
+    lcov_file.write_text("TN:\nend_of_record\n")
+
+    serial = build_report(str(lcov_file), [str(tmp_path)], max_workers=1)
+    parallel = build_report(str(lcov_file), [str(tmp_path)], max_workers=4)
+
+    assert [r.qualified_name for r in serial] == [r.qualified_name for r in parallel]
+
+
 def test_build_report_qualified_name_uses_dot_separator(tmp_path):
     source = "class Foo:\n    def bar(self):\n        pass\n"
     src_file = tmp_path / "mod.py"
