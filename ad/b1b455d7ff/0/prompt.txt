@@ -1,0 +1,5 @@
+What about entire checkpoint branch, cant at least keep it private?
+
+---
+
+1. Set private again 2. LEts configure entire to use  another repo, like crap4py-entire. 3. Once we are sure and proved the migration we can think again about making it public
