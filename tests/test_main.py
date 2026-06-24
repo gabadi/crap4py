@@ -253,9 +253,10 @@ def test_main_format_json_produces_valid_json(tmp_path, monkeypatch, capsys):
     lcov_file = tmp_path / "coverage.lcov"
     lcov_file.write_text(f"TN:\nSF:{label}\nBRDA:1,0,0,1\nend_of_record\n")
     monkeypatch.setattr(sys, "argv", ["crap4py", "--lcov", str(lcov_file), "--format", "json", str(tmp_path)])
-    from crap4py.__main__ import main
 
     import json
+
+    from crap4py.__main__ import main
 
     main()
     captured = capsys.readouterr()
@@ -276,9 +277,10 @@ def test_main_format_json_summary_keys(tmp_path, monkeypatch, capsys):
     lcov_file = tmp_path / "coverage.lcov"
     lcov_file.write_text("TN:\nend_of_record\n")
     monkeypatch.setattr(sys, "argv", ["crap4py", "--lcov", str(lcov_file), "--format", "json", str(tmp_path)])
-    from crap4py.__main__ import main
 
     import json
+
+    from crap4py.__main__ import main
 
     main()
     captured = capsys.readouterr()
@@ -296,9 +298,10 @@ def test_main_format_json_na_coverage_is_null(tmp_path, monkeypatch, capsys):
     lcov_file = tmp_path / "coverage.lcov"
     lcov_file.write_text("TN:\nend_of_record\n")
     monkeypatch.setattr(sys, "argv", ["crap4py", "--lcov", str(lcov_file), "--format", "json", str(tmp_path)])
-    from crap4py.__main__ import main
 
     import json
+
+    from crap4py.__main__ import main
 
     main()
     captured = capsys.readouterr()
