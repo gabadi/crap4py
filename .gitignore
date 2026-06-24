@@ -21,3 +21,4 @@ build/
 .pytest_cache/
 acceptance/parsed/
 acceptance/generated/
+lcov.info
